@@ -364,15 +364,16 @@
             const branchName = "연제/금정대리점"; 
             const jobTitle = "영업담당";
             
-            /* 박스 정렬 문제(Flexbox) 및 줄바꿈 해결 */
+            /* html2canvas 렌더링 버그(높이 계산 오류) 방지를 위해 flex, min-height 속성을 완전히 제거하고,
+               안정적인 display: block; 과 상하 대칭 패딩(padding: 22px 15px;)을 활용한 레이아웃으로 변경했습니다. */
             const letterHtml = `
                 <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 15px; color: #111; text-align: center;">[르노코리아] 고객님, 어제 시승은 편안하셨는지요?</div>
                 안녕하세요. 고객님.<br>
                 르노코리아 ${branchName}의 ${selectedRep.name} ${jobTitle}입니다.<br><br>
                 바쁜 일정 중에도 귀한 시간을 내어 <strong>${cars[carKey].korName}</strong> 시승을 함께해 주셔서 진심으로 감사드립니다.<br><br>
                 어제 함께한 드라이빙이 기분 좋은 여운으로 남으셨기를 바랍니다. 대화를 나누며 가족을 위해 신중하게 차를 고르시는 따뜻한 마음을 깊이 느낄 수 있었습니다.<br><br>
-                <div style="display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.95rem; font-weight: 700; color: #d32f2f; background: #fdf2f2; min-height: 85px; padding: 15px 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #f9e1e1; word-break: keep-all; line-height: 1.5; box-sizing: border-box;">
-                    <span style="display: inline-block;">"단순히 차를 판매하는 것이 아니라,<br>고객님의 일상에 가장 잘 맞는 든든한 동반자를 찾아드리겠습니다."</span>
+                <div style="display: block; text-align: center; font-size: 0.95rem; font-weight: 700; color: #d32f2f; background: #fdf2f2; padding: 22px 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #f9e1e1; word-break: keep-all; line-height: 1.6; box-sizing: border-box;">
+                    "단순히 차를 판매하는 것이 아니라,<br>고객님의 일상에 가장 잘 맞는 든든한 동반자를 찾아드리겠습니다."
                 </div>
                 차량은 일상의 중요한 공간인 만큼 천천히 고민해 보시고, 궁금하신 점이나 혜택 안내가 필요하실 땐 언제든 편하게 연락 주십시오. 정직하고 든든한 길잡이가 되어드리겠습니다.<br><br>
                 늘 안전운전 하시기를 기원합니다. 감사합니다.<br>
