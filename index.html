@@ -50,7 +50,7 @@
         .sms-container hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
         .highlight-flash { background-color: #fff3cd !important; }
 
-        /* [탭 2] 명함 제작기 전용 CSS */
+        /* [탭 2] 시승 이후 문자 전용 CSS */
         .card-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: #333; }
         .admin-panel { background: #fff; width: 100%; max-width: 420px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
         .admin-panel h3 { margin: 0 0 15px 0; font-size: 1rem; color: #555; border-left: 4px solid #f1c40f; padding-left: 10px; font-weight: bold; }
@@ -98,10 +98,10 @@
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-center space-x-2 py-4">
                     <button id="tab-btn-sms" class="px-6 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-2">
-                        <i data-lucide="message-square-text" class="w-5 h-5"></i> 시승 문자 안내
+                        <i data-lucide="message-square-text" class="w-5 h-5"></i> 시승 예약 문자
                     </button>
                     <button id="tab-btn-card" class="px-6 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-2">
-                        <i data-lucide="id-card" class="w-5 h-5"></i> 모바일 명함
+                        <i data-lucide="send" class="w-5 h-5"></i> 시승 이후 문자
                     </button>
                 </div>
             </div>
@@ -158,7 +158,7 @@
 
         <div id="section-card" class="card-wrapper hidden">
             <div class="admin-panel">
-                <h3>명함 관리 및 점검</h3>
+                <h3>시승 감사 문자 설정</h3>
                 <div class="row-inputs">
                     <select id="carSelect">
                         <option value="filante">필랑트 (Filante)</option>
@@ -175,8 +175,8 @@
                     <div class="file-upload-btn">📷 차량 이미지 변경</div>
                     <input type="file" accept="image/*" id="carInput">
                 </div>
-                <button class="btn-save" id="saveBtn">📸 최종 이미지로 저장</button>
-                <div class="guide-text">💡 변경 사항이 즉시 아래 명함에 반영됩니다. (텍스트 클릭 시 수정 가능)</div>
+                <button class="btn-save" id="saveBtn">📸 최종 안내 이미지 저장</button>
+                <div class="guide-text">💡 아래 내용을 확인하고 저장하세요. (텍스트 클릭 시 즉석 수정 가능)</div>
             </div>
 
             <div class="mobile-card" id="cardArea">
@@ -415,7 +415,7 @@
                 target.style.width = originalWidth;
                 target.style.maxWidth = originalMaxWidth;
                 const link = document.createElement('a');
-                link.download = `르노코리아_모바일명함.png`;
+                link.download = `르노코리아_시승이후안내.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
