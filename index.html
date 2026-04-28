@@ -26,9 +26,9 @@
         .auth-box button:hover { background: #333; }
         .error-msg { color: #d32f2f; font-size: 0.85rem; margin-bottom: 15px; display: none; font-weight: bold; }
         
-        #main-content { display: none; } /* 로그인 전에는 메인 콘텐츠 숨김 */
+        #main-content { display: none; }
 
-        /* 기존 CSS 동일 */
+        /* [탭 1] 시승 안내 문자 전용 CSS */
         .sms-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
         .sms-container { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 550px; box-sizing: border-box; }
         .sms-container h2 { text-align: center; color: #222; margin-top: 0; margin-bottom: 25px; letter-spacing: -1px; font-weight: bold; font-size: 1.5rem; }
@@ -50,6 +50,7 @@
         .sms-container hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
         .highlight-flash { background-color: #fff3cd !important; }
 
+        /* [탭 2] 명함 제작기 전용 CSS */
         .card-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: #333; }
         .admin-panel { background: #fff; width: 100%; max-width: 420px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
         .admin-panel h3 { margin: 0 0 15px 0; font-size: 1rem; color: #555; border-left: 4px solid #f1c40f; padding-left: 10px; font-weight: bold; }
@@ -58,14 +59,12 @@
         .file-upload-wrapper { position: relative; width: 100%; margin-bottom: 8px; }
         .file-upload-btn { display: block; width: 100%; box-sizing: border-box; padding: 12px; background-color: #f8f9fa; color: #333; text-align: center; border-radius: 8px; font-size: 0.9rem; font-weight: bold; border: 1px solid #ccc; cursor: pointer; }
         .file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-        .logo-btn { background-color: #fff8e1; border-color: #f1c40f; color: #856404; }
         .btn-save { width: 100%; padding: 15px; background-color: #111; color: #f1c40f; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .guide-text { font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center; }
 
         .mobile-card { background: #fff; width: 100%; max-width: 400px; overflow: hidden; position: relative; border: 1px solid #eee; box-sizing: border-box; }
         .card-header { padding: 15px 20px; text-align: center; border-bottom: 1px solid #f8f8f8; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .card-header img.logo { max-height: 45px; width: auto; margin-bottom: 8px; display: none; }
-        .card-header .logo-placeholder { font-weight: bold; font-size: 1.1rem; color: #ccc; margin-bottom: 8px; }
+        .card-header img.logo { max-height: 45px; width: auto; margin-bottom: 8px; }
         .card-header .branch { font-size: 0.8rem; color: #777; line-height: 1.5; font-weight: 500; }
         .hero { position: relative; width: 100%; height: 230px; background-color: #222; display: flex; align-items: center; justify-content: center; }
         .hero .placeholder { position: absolute; color: #aaa; font-size: 0.95rem; z-index: 1; text-align: center; }
@@ -160,10 +159,6 @@
         <div id="section-card" class="card-wrapper hidden">
             <div class="admin-panel">
                 <h3>명함 관리 및 점검</h3>
-                <div class="file-upload-wrapper">
-                    <div class="file-upload-btn logo-btn">🚩 상단 르노 로고 등록</div>
-                    <input type="file" accept="image/*" id="logoInput">
-                </div>
                 <div class="row-inputs">
                     <select id="carSelect">
                         <option value="filante">필랑트 (Filante)</option>
@@ -186,8 +181,7 @@
 
             <div class="mobile-card" id="cardArea">
                 <div class="card-header">
-                    <div class="logo-placeholder" id="logoEmpty">RENAULT</div>
-                    <img id="mainLogo" src="" alt="Renault" class="logo">
+                    <img id="mainLogo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png" alt="Renault" class="logo">
                     <div class="branch">
                         <strong>르노코리아</strong><br>
                     </div>
@@ -212,12 +206,8 @@
     </div>
 
     <script>
-        /* =========================================
-           인증 로직 (비밀번호: 89780186)
-           ========================================= */
         function checkPwd() {
             const input = document.getElementById('pwdInput').value;
-            // 원하는 비밀번호로 아래 영문자를 변경하시면 됩니다.
             if(input === '89780186') {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
@@ -226,9 +216,6 @@
             }
         }
 
-        /* =========================================
-           공통: 아이콘 초기화 및 탭 전환 로직
-           ========================================= */
         lucide.createIcons();
 
         const btnSms = document.getElementById('tab-btn-sms');
@@ -250,9 +237,6 @@
             btnSms.className = "px-6 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-2";
         });
 
-        /* =========================================
-           기능 1: 시승 안내 문자 생성기
-           ========================================= */
         const branchInfo = {
             geumjeong: { fullName: "르노코리아 금정대리점", shortName: "금정점", address: "금정구 중앙대로 1640" },
             yeonje: { fullName: "르노코리아 연제대리점", shortName: "연제점", address: "연제구 과정로 205" }
@@ -277,18 +261,13 @@
         parseBtn.addEventListener('click', () => {
             const txt = rawInput.value;
             if(!txt) return alert("내용을 입력해주세요.");
-
             let found = false;
-
             if(txt.includes("금정")) { branchSelect.value = "geumjeong"; flash(branchSelect); found = true; }
             else if(txt.includes("연제")) { branchSelect.value = "yeonje"; flash(branchSelect); found = true; }
-
             const nMatch = txt.match(/\[([가-힣]{2,4})\]/);
             if(nMatch) { nameInput.value = nMatch[1]; flash(nameInput); found = true; }
-
             const lowTxt = txt.toLowerCase().replace(/\s/g, '');
             const isHybrid = lowTxt.includes("하이브리드") || lowTxt.includes("etech") || lowTxt.includes("이텍");
-
             if(lowTxt.includes("arkana") || lowTxt.includes("아르카나")) {
                 vehicleSelect.value = isHybrid ? "아르카나 E-Tech" : "아르카나";
                 flash(vehicleSelect); found = true;
@@ -305,7 +284,6 @@
                 vehicleSelect.value = "SM6";
                 flash(vehicleSelect); found = true;
             }
-
             const dMatch = txt.match(/(\d{1,2})[-/.](\d{1,2})|(\d{1,2})월\s*(\d{1,2})일/);
             if(dMatch) {
                 const year = new Date().getFullYear();
@@ -315,10 +293,8 @@
                 flash(dateInput);
                 found = true;
             }
-
             const tMatch = txt.match(/(\d{1,2})\s*시/);
             if(tMatch) { timeInput.value = tMatch[1] + "시"; flash(timeInput); found = true; }
-
             if(found) {
                 parseBtn.innerText = "✅ 분류 완료!";
                 setTimeout(() => parseBtn.innerText = "✨ 내용 자동 분류하기", 1500);
@@ -330,13 +306,11 @@
             const name = nameInput.value || "ㅇㅇㅇ";
             let time = timeInput.value || "00시";
             const car = vehicleSelect.value;
-
             if(time === "4시") time = "16시";
             else if(time === "1시") time = "13시";
             else if(time === "2시") time = "14시";
             else if(time === "3시") time = "15시";
             else if(time === "5시") time = "17시";
-
             let dateStr = "00. 00.00(ㅇ)";
             if(dateInput.value) {
                 const d = new Date(dateInput.value);
@@ -346,7 +320,6 @@
                 const weeks = ['일','월','화','수','목','금','토'];
                 dateStr = `${yy}. ${mm}.${dd}(${weeks[d.getDay()]})`;
             }
-
             resultArea.value = `[${br.fullName}]\n\n${name} 고객님 안녕하세요.\n저희 ${br.shortName} 시승예약&상담신청을 해주셔서 감사합니다.\n\n-시승일자/시간 : ${dateStr} ${time}\n-시승차종 : ${car}\n-시승장소 : ${br.fullName}\n(주소: ${br.address})\n\n★다른 시승 고객님을 위해 시승시간 준수 부탁드리며 시승시에는 담당영업팀장이 동승하여 시승 운영 합니다\n★전시장 방문시 운전면허증 지참 바랍니다\n\n※ 혹시 시승일정 연기나 취소 필요한 고객께서는 사전에 반드시 연락 주시기 바랍니다`;
         });
 
@@ -361,9 +334,6 @@
             window.getSelection().removeAllRanges();
         });
 
-        /* =========================================
-           기능 2: 모바일 명함 제작기
-           ========================================= */
         const reps = {
             lee: { name: "이상헌", phone: "010-8978-0186" },
             kang: { name: "강명수", phone: "010-6358-0357" },
@@ -379,17 +349,13 @@
         function updateCardView() {
             const carKey = document.getElementById("carSelect").value;
             const repKey = document.getElementById("repSelect").value;
-            
             document.getElementById("dispCarTitle").textContent = cars[carKey].title;
             document.getElementById("dispCarSub").textContent = cars[carKey].sub;
-            
             const selectedRep = reps[repKey];
             document.getElementById("dispName").textContent = selectedRep.name;
             document.getElementById("dispPhone").textContent = selectedRep.phone;
-
             const branchName = "연제/금정대리점"; 
             const jobTitle = "영업담당";
-            
             const letterHtml = `
                 <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 15px; color: #111; text-align: center;">[르노코리아] 고객님, 어제 시승은 편안하셨는지요?</div>
                 안녕하세요. 고객님.<br>
@@ -403,12 +369,9 @@
                 늘 안전운전 하시기를 기원합니다. 감사합니다.<br>
                 <strong>르노코리아 ${branchName} ${selectedRep.name} 올림</strong>
             `;
-            
             document.getElementById("dispMessage").innerHTML = letterHtml;
-
             const imgTag = document.getElementById("displayImg");
             const notice = document.getElementById("imgNotice");
-            
             if(cars[carKey].img) {
                 imgTag.src = cars[carKey].img;
                 imgTag.style.display = "block";
@@ -418,20 +381,6 @@
                 notice.style.display = "block";
             }
         }
-
-        document.getElementById("logoInput").addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const logoImg = document.getElementById("mainLogo");
-                    logoImg.src = event.target.result;
-                    logoImg.style.display = "block";
-                    document.getElementById("logoEmpty").style.display = "none";
-                }
-                reader.readAsDataURL(file);
-            }
-        });
 
         document.getElementById("carSelect").addEventListener("change", updateCardView);
         document.getElementById("repSelect").addEventListener("change", updateCardView);
@@ -456,7 +405,6 @@
             const originalMaxWidth = target.style.maxWidth;
             target.style.width = "430px";
             target.style.maxWidth = "430px";
-
             html2canvas(target, {
                 scale: 3, 
                 useCORS: true,
