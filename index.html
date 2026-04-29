@@ -138,14 +138,11 @@
                 </div>
                 <div class="form-group">
                     <label for="vehicle">시승차종</label>
+                    <!-- 요청하신 3가지 차종으로만 제한됨 -->
                     <select id="vehicle">
-                        <option value="아르카나 E-Tech">아르카나 E-Tech</option>
-                        <option value="아르카나">아르카나 (가솔린)</option>
-                        <option value="그랑콜레오스 E-Tech">그랑콜레오스 E-Tech</option>
-                        <option value="그랑콜레오스">그랑콜레오스 (가솔린)</option>
                         <option value="필랑트">필랑트</option>
-                        <option value="QM6">QM6</option>
-                        <option value="SM6">SM6</option>
+                        <option value="그랑콜레오스 E-Tech 하이브리드">그랑콜레오스 E-Tech 하이브리드</option>
+                        <option value="아르카나(가솔린)">아르카나(가솔린)</option>
                     </select>
                 </div>
                 <button type="button" class="action-btn btn-generate" id="generateBtn">📩 안내 문자 생성</button>
@@ -273,24 +270,21 @@
             else if(txt.includes("연제")) { branchSelect.value = "yeonje"; flash(branchSelect); found = true; }
             const nMatch = txt.match(/\[([가-힣]{2,4})\]/);
             if(nMatch) { nameInput.value = nMatch[1]; flash(nameInput); found = true; }
+            
             const lowTxt = txt.toLowerCase().replace(/\s/g, '');
-            const isHybrid = lowTxt.includes("하이브리드") || lowTxt.includes("etech") || lowTxt.includes("이텍");
+            
+            // 3가지 제한된 차종에 맞게 매칭 로직 업데이트
             if(lowTxt.includes("arkana") || lowTxt.includes("아르카나")) {
-                vehicleSelect.value = isHybrid ? "아르카나 E-Tech" : "아르카나";
+                vehicleSelect.value = "아르카나(가솔린)";
                 flash(vehicleSelect); found = true;
             } else if(lowTxt.includes("grandkoleos") || lowTxt.includes("그랑콜레오스") || lowTxt.includes("콜레오스")) {
-                vehicleSelect.value = isHybrid ? "그랑콜레오스 E-Tech" : "그랑콜레오스";
+                vehicleSelect.value = "그랑콜레오스 E-Tech 하이브리드";
                 flash(vehicleSelect); found = true;
             } else if(lowTxt.includes("filante") || lowTxt.includes("필랑트")) {
                 vehicleSelect.value = "필랑트";
                 flash(vehicleSelect); found = true;
-            } else if(lowTxt.includes("qm6")) {
-                vehicleSelect.value = "QM6";
-                flash(vehicleSelect); found = true;
-            } else if(lowTxt.includes("sm6")) {
-                vehicleSelect.value = "SM6";
-                flash(vehicleSelect); found = true;
             }
+
             const dMatch = txt.match(/(\d{1,2})[-/.](\d{1,2})|(\d{1,2})월\s*(\d{1,2})일/);
             if(dMatch) {
                 const year = new Date().getFullYear();
@@ -364,8 +358,6 @@
             const branchName = "연제/금정대리점"; 
             const jobTitle = "영업담당";
             
-            /* html2canvas 렌더링 버그(높이 계산 오류) 방지를 위해 flex, min-height 속성을 완전히 제거하고,
-               안정적인 display: block; 과 상하 대칭 패딩(padding: 22px 15px;)을 활용한 레이아웃으로 변경했습니다. */
             const letterHtml = `
                 <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 15px; color: #111; text-align: center;">[르노코리아] 고객님, 어제 시승은 편안하셨는지요?</div>
                 안녕하세요. 고객님.<br>
