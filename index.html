@@ -162,7 +162,7 @@
             <div class="admin-panel">
                 <h3>시승 감사 문자 설정</h3>
                 <div class="file-upload-wrapper">
-                    <div class="file-upload-btn logo-btn">🚩 르노 로고 직접 등록 (오류 시)</div>
+                    <div class="file-upload-btn logo-btn">🚩 다른 로고 이미지로 임시 변경</div>
                     <input type="file" accept="image/*" id="logoInput">
                 </div>
                 <div class="row-inputs">
@@ -187,7 +187,7 @@
 
             <div class="mobile-card" id="cardArea">
                 <div class="card-header">
-                    <img id="mainLogo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAgNUw5MCA1MCA1MCA5NSAxMCA1MFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVqb2luPSJiZXZlbCIvPjxwYXRoIGQ9Ik01MCAyNUw3MiA1MCA1MCA3NSAyOCA1MFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWpvaW49ImJldmVsIi8+PC9zdmc+" alt="Renault" class="logo">
+                    <img id="mainLogo" src="logo.png" alt="Renault" class="logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
                     <div class="branch">
                         <strong>르노코리아</strong><br>
                     </div>
@@ -215,7 +215,7 @@
                 <h3>🎉 출고 축하 안내 설정</h3>
                 
                 <div class="file-upload-wrapper">
-                    <div class="file-upload-btn logo-btn">🚩 르노 로고 직접 등록 (오류 시)</div>
+                    <div class="file-upload-btn logo-btn">🚩 다른 로고 이미지로 임시 변경</div>
                     <input type="file" accept="image/*" id="delivLogoInput">
                 </div>
 
@@ -246,7 +246,7 @@
 
             <div class="mobile-card" id="delivCardArea">
                 <div class="card-header">
-                    <img id="delivMainLogo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAgNUw5MCA1MCA1MCA5NSAxMCA1MFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVqb2luPSJiZXZlbCIvPjxwYXRoIGQ9Ik01MCAyNUw3MiA1MCA1MCA3NSAyOCA1MFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWpvaW49ImJldmVsIi8+PC9zdmc+" alt="Renault" class="logo">
+                    <img id="delivMainLogo" src="logo.png" alt="Renault" class="logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
                     <div class="branch">
                         <strong>르노코리아</strong><br>
                     </div>
@@ -395,7 +395,7 @@
             window.getSelection().removeAllRanges();
         });
 
-        // --- 로고 동기화 전용 통합 함수 (2번 탭, 3번 탭 동시 연동) ---
+        // --- 로고 동기화 전용 통합 함수 ---
         function syncAllLogos(srcUrl) {
             const logo1 = document.getElementById("mainLogo");
             const logo2 = document.getElementById("delivMainLogo");
@@ -403,7 +403,7 @@
             if (logo2) { logo2.src = srcUrl; logo2.style.display = "block"; }
         }
 
-        // 2번 탭 로고 업로드 이벤트
+        // 수동 업로드 시 연동 이벤트
         document.getElementById("logoInput").addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -413,7 +413,6 @@
             }
         });
 
-        // 3번 탭 로고 업로드 이벤트 (신규 연동)
         document.getElementById("delivLogoInput").addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (file) {
