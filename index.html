@@ -69,9 +69,13 @@
         .card-header { padding: 15px 20px; text-align: center; border-bottom: 1px solid #f8f8f8; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .card-header img.logo { max-height: 45px; width: auto; margin-bottom: 8px; }
         .card-header .branch { font-size: 0.8rem; color: #777; line-height: 1.5; font-weight: 500; }
-        .hero { position: relative; width: 100%; height: 230px; background-color: #222; display: flex; align-items: center; justify-content: center; }
+        
+        /* 찌그러짐 방지를 위해 수정한 히어로 영역 CSS */
+        .hero { position: relative; width: 100%; height: 230px; background-color: #222; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .hero .placeholder { position: absolute; color: #aaa; font-size: 0.95rem; z-index: 1; text-align: center; }
-        .hero img { position: relative; width: 100%; height: 100%; object-fit: cover; z-index: 2; display: none; }
+        /* 컨테이너 방식 대신 img 태그 자체를 절대 좌표로 꽉 채우고 커버 처리 */
+        .hero img.car-photo { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 2; display: none; }
+        
         .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 18px 20px; color: white; z-index: 3; text-align: left; }
         .hero-overlay h2 { margin: 0; font-size: 1.7rem; font-weight: 800; font-style: italic; letter-spacing: 1px; }
         .hero-overlay p { margin: 3px 0 0; font-size: 0.95rem; color: #f1c40f; font-weight: 600; }
@@ -194,7 +198,7 @@
                 </div>
                 <div class="hero">
                     <div class="placeholder" id="imgNotice">이미지를 등록해주세요.</div>
-                    <img id="displayImg" src="">
+                    <img id="displayImg" src="" class="car-photo">
                     <div class="hero-overlay">
                         <h2 id="dispCarTitle">Filante</h2>
                         <p id="dispCarSub">E-Tech</p>
@@ -253,7 +257,7 @@
                 </div>
                 <div class="hero">
                     <div class="placeholder" id="delivImgNotice">출고 차량 사진을 등록해주세요.</div>
-                    <img id="delivDisplayImg" src="">
+                    <img id="delivDisplayImg" src="" class="car-photo">
                     <div class="hero-overlay">
                         <h2 id="delivDispCarTitle">Filante</h2>
                         <p id="delivDispCarSub">E-Tech</p>
@@ -403,7 +407,6 @@
             if (logo2) { logo2.src = srcUrl; logo2.style.display = "block"; }
         }
 
-        // 수동 업로드 시 연동 이벤트
         document.getElementById("logoInput").addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (file) {
