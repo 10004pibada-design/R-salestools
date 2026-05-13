@@ -111,42 +111,6 @@
             font-family: 'Nanum Myeongjo', 'Malgun Gothic', serif;
         }
 
-        /* [완벽한 수직 중앙 정렬을 위해 수정한 헤더 영역 CSS]
-           단순 Flexbox에 의존하지 않고 로고와 텍스트의 기준 높이를 75px로 통일하여 캡처 왜곡을 차단합니다.
-        */
-        .doc-header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 18px;
-            margin-bottom: 45px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 15px;
-            height: 75px; /* 전체 박스 높이를 로고 기준에 맞춤 */
-            box-sizing: content-box;
-        }
-
-        .doc-header img.doc-logo {
-            height: 75px;
-            width: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        .doc-header .doc-title-text {
-            font-size: 30pt;
-            font-weight: 900;
-            font-family: 'Inter', 'Pretendard', sans-serif;
-            letter-spacing: 1.5px;
-            color: #111;
-            /* 폰트 내장 여백에 의한 어긋남을 막기 위해 행간을 높이와 1:1 매칭하고 미세 보정 적용 */
-            line-height: 75px; 
-            height: 75px;
-            margin-top: 3px; 
-            display: flex;
-            align-items: center;
-        }
-
         /* 수신~제목 테이블 */
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Pretendard', sans-serif; }
         .info-table td { padding: 8px 0; font-size: 13pt; vertical-align: top; line-height: 1.4; }
@@ -382,10 +346,16 @@
 
             <div id="document-paper">
                 <div>
-                    <div class="doc-header">
-                        <img class="doc-logo" id="docMainLogo" src="logo.png" alt="Renault Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
-                        <div class="doc-title-text">RENAULT KOREA</div>
-                    </div>
+                    <table style="width: 100%; margin-bottom: 45px; border-bottom: 2px solid #333; padding-bottom: 15px; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 80px; vertical-align: middle; padding: 0;">
+                                <img id="docMainLogo" src="logo.png" alt="Renault Logo" style="height: 75px; width: auto; display: block;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
+                            </td>
+                            <td style="vertical-align: middle; text-align: left; padding: 0 0 0 18px;">
+                                <div style="font-size: 30pt; font-weight: 900; font-family: 'Inter', 'Pretendard', sans-serif; letter-spacing: 1.5px; color: #111; line-height: 1; margin: 0; margin-top: -2px;">RENAULT KOREA</div>
+                            </td>
+                        </tr>
+                    </table>
 
                     <table class="info-table">
                         <tr>
