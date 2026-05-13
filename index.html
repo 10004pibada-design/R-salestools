@@ -12,6 +12,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        /* 공문서 전용 명조체 로드 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
         
         body { font-family: 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f0f2f5; margin: 0; }
         .transition-all { transition: all 0.3s ease-in-out; }
@@ -52,7 +54,7 @@
         .form-container hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
         .highlight-flash { background-color: #fff3cd !important; }
 
-        /* 카드 생성 뷰 전용 CSS */
+        /* 모바일 카드 뷰 전용 CSS */
         .card-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: #333; }
         .admin-panel { background: #fff; width: 100%; max-width: 420px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
         .admin-panel h3 { margin: 0 0 15px 0; font-size: 1rem; color: #555; border-left: 4px solid #f1c40f; padding-left: 10px; font-weight: bold; }
@@ -70,10 +72,8 @@
         .card-header img.logo { max-height: 45px; width: auto; margin-bottom: 8px; }
         .card-header .branch { font-size: 0.8rem; color: #777; line-height: 1.5; font-weight: 500; }
         
-        /* 찌그러짐 방지를 위해 수정한 히어로 영역 CSS */
         .hero { position: relative; width: 100%; height: 230px; background-color: #222; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .hero .placeholder { position: absolute; color: #aaa; font-size: 0.95rem; z-index: 1; text-align: center; }
-        /* 컨테이너 방식 대신 img 태그 자체를 절대 좌표로 꽉 채우고 커버 처리 */
         .hero img.car-photo { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 2; display: none; }
         
         .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 18px 20px; color: white; z-index: 3; text-align: left; }
@@ -86,6 +86,89 @@
         .contact-area { text-align: center; padding-top: 15px; border-top: 1px solid #eee; }
         .rep-info { font-size: 1.15rem; font-weight: 700; color: #111; margin-bottom: 5px; }
         .rep-phone { font-size: 1.6rem; font-weight: 800; color: #0000ee; letter-spacing: 0.5px; }
+
+        /* --- [탭 4] 공문서 생성기 전용 CSS --- */
+        .doc-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; box-sizing: border-box; }
+        .doc-controls { width: 100%; max-width: 800px; background: white; padding: 15px 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        .btn-bold { background-color: #6c757d; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; font-size: 0.95rem; }
+        .btn-bold:hover { background-color: #5a6268; }
+        .btn-download-doc { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; font-size: 0.95rem; }
+        .btn-download-doc:hover { background-color: #0056b3; }
+
+        /* A4 비율의 공문서 페이퍼 */
+        #document-paper {
+            width: 800px;
+            height: 1131px; /* A4 비율 */
+            background-color: white;
+            padding: 65px 60px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-family: 'Nanum Myeongjo', 'Malgun Gothic', serif; /* 공문서 본문 명조체 기본 적용 */
+        }
+
+        /* 공문서 헤더 영역 (로고 10 : 글자 6 비율 구현) */
+        .doc-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            margin-bottom: 45px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .doc-header img.doc-logo {
+            height: 75px; /* 로고 크기 비중 10 */
+            width: auto;
+            object-fit: contain;
+        }
+
+        .doc-header .doc-title-text {
+            font-size: 30pt; /* 글자 크기 비중 6 */
+            font-weight: 900;
+            font-family: 'Inter', 'Pretendard', sans-serif; /* 타이틀은 현대적인 고딕 계열 */
+            letter-spacing: 1.5px;
+            color: #111;
+            line-height: 1;
+        }
+
+        /* 수신~제목 테이블 */
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Pretendard', sans-serif; }
+        .info-table td { padding: 8px 0; font-size: 13pt; vertical-align: top; line-height: 1.4; }
+        .info-label { width: 90px; font-weight: bold; letter-spacing: 4px; color: #222; }
+        .doc-target-input { border: 1px dashed transparent; width: 100%; transition: 0.2s; }
+        .doc-target-input:hover, .doc-target-input:focus { background-color: #fdfdfd; border-color: #ccc; outline: none; }
+
+        .divider-thick { border-top: 2px solid #000; margin: 10px 0 35px 0; }
+
+        /* 본문 영역 */
+        .doc-content-area {
+            flex-grow: 1;
+            font-size: 12.5pt;
+            line-height: 2.1;
+            white-space: pre-wrap;
+            outline: none;
+            word-break: keep-all;
+            border: 1px dashed transparent;
+            padding: 5px;
+            transition: 0.2s;
+        }
+        .doc-content-area:hover, .doc-content-area:focus { border-color: #ddd; background-color: #fafafa; }
+
+        /* 발신인 영역 */
+        .sender-section { text-align: center; margin-top: 40px; margin-bottom: 50px; font-family: 'Pretendard', sans-serif; }
+        .sender-name { font-size: 20pt; font-weight: bold; line-height: 1.5; outline: none; display: inline-block; border: 1px dashed transparent; padding: 5px 15px; }
+        .sender-name:hover, .sender-name:focus { border-color: #ccc; background-color: #fafafa; }
+
+        /* 하단 주소 영역 */
+        .footer-divider { border-top: 1px solid #aaa; margin-bottom: 12px; }
+        .footer-info { font-size: 9.5pt; color: #555; line-height: 1.6; outline: none; font-family: 'Pretendard', sans-serif; border: 1px dashed transparent; padding: 2px; }
+        .footer-info:hover, .footer-info:focus { border-color: #ddd; background-color: #fafafa; }
     </style>
 </head>
 <body>
@@ -103,15 +186,18 @@
     <div id="main-content">
         <div class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-center space-x-2 py-4">
-                    <button id="tab-btn-sms" onclick="switchTab('sms')" class="px-5 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 text-sm sm:text-base">
+                <div class="flex justify-center space-x-1.5 sm:space-x-2 py-4">
+                    <button id="tab-btn-sms" onclick="switchTab('sms')" class="px-4 sm:px-5 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
                         <i data-lucide="message-square-text" class="w-4 h-4 sm:w-5 sm:h-5"></i> 시승 예약
                     </button>
-                    <button id="tab-btn-card" onclick="switchTab('card')" class="px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-sm sm:text-base">
+                    <button id="tab-btn-card" onclick="switchTab('card')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
                         <i data-lucide="send" class="w-4 h-4 sm:w-5 sm:h-5"></i> 시승 감사
                     </button>
-                    <button id="tab-btn-delivery" onclick="switchTab('delivery')" class="px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-sm sm:text-base">
+                    <button id="tab-btn-delivery" onclick="switchTab('delivery')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
                         <i data-lucide="gift" class="w-4 h-4 sm:w-5 sm:h-5"></i> 출고 안내
+                    </button>
+                    <button id="tab-btn-doc" onclick="switchTab('doc')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
+                        <i data-lucide="file-text" class="w-4 h-4 sm:w-5 sm:h-5"></i> 공문 작성
                     </button>
                 </div>
             </div>
@@ -275,6 +361,62 @@
             <textarea id="delivTextHidden" style="display:none;"></textarea>
         </div>
 
+        <div id="section-doc" class="doc-wrapper hidden">
+            <div class="doc-controls">
+                <div class="flex items-center gap-2">
+                    <button class="btn-bold" onclick="execBold()" title="글자를 드래그하고 누르면 굵어집니다">글자 굵게 (B)</button>
+                    <span class="guide-text hidden sm:inline">💡 문서 내부 텍스트를 클릭해 내용을 직접 수정하세요.</span>
+                </div>
+                <button class="btn-download-doc" onclick="downloadDocImage()">공문서 다운로드 (PNG)</button>
+            </div>
+
+            <div id="document-paper">
+                <div>
+                    <div class="doc-header">
+                        <img class="doc-logo" id="docMainLogo" src="logo.png" alt="Renault Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
+                        <div class="doc-title-text">RENAULT KOREA</div>
+                    </div>
+
+                    <table class="info-table">
+                        <tr>
+                            <td class="info-label">수 신 :</td>
+                            <td><div class="doc-target-input" contenteditable="true">○○○ 주식회사 임직원 귀하</div></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">참 조 :</td>
+                            <td><div class="doc-target-input" contenteditable="true">혜택범위(배우자, 자녀, 자녀의 배우자, 부모까지) 내</div></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">제 목 :</td>
+                            <td><div class="doc-target-input" contenteditable="true"><strong>[협조 요청] 르노코리아와 부산상공회의소가 함께하는 회원사 특별할인</strong></div></td>
+                        </tr>
+                    </table>
+
+                    <div class="divider-thick"></div>
+
+                    <div class="doc-content-area" contenteditable="true">1. 귀사의 발전과 건승을 기원합니다.
+
+2. 저희 대리점에서 근무 중인 영업사원은 대부분 10년 이상 근무 중으로 고객님의 든든한 동반자가 되어 차량을 판매 중에 있습니다. 오랜 신뢰를 바탕으로 차량을 판매 중이며 매월 진행 중인 프로모션을 안내드리기 위해 협조 부탁드립니다.
+
+3. 필랑트, 그랑콜레오스 구매 시 일반 고객 혜택 + <strong>50만원 추가할인 적용!</strong>
+※ 회원사(법인)에는 3% 적용
+
+4. 관련 사항을 검토하시어, 홍보와 연락주시면 감사하겠습니다.</div>
+                </div>
+
+                <div>
+                    <div class="sender-section">
+                        <div class="sender-name" contenteditable="true">르노코리아 연제/금정대리점 이상헌 팀장<br>010-8978-0186</div>
+                    </div>
+
+                    <div class="footer-divider"></div>
+                    
+                    <div class="footer-info" contenteditable="true">르노코리아 금정대리점: 부산광역시 금정구 중앙대로 1640(부곡동) 1층
+르노코리아 연제대리점: 부산광역시 연제구 과정로 205(연산동)</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -291,18 +433,18 @@
 
         lucide.createIcons();
 
-        // 통합 탭 스위칭 로직
+        // 4개 탭 통합 스위칭 로직 확장
         function switchTab(tabId) {
-            const tabs = ['sms', 'card', 'delivery'];
+            const tabs = ['sms', 'card', 'delivery', 'doc'];
             tabs.forEach(t => {
                 const sec = document.getElementById(`section-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if (t === tabId) {
                     sec.style.display = 'flex';
-                    btn.className = "px-5 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 text-sm sm:text-base";
+                    btn.className = "px-4 sm:px-5 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base";
                 } else {
                     sec.style.display = 'none';
-                    btn.className = "px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-sm sm:text-base";
+                    btn.className = "px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base";
                 }
             });
         }
@@ -399,12 +541,14 @@
             window.getSelection().removeAllRanges();
         });
 
-        // --- 로고 동기화 전용 통합 함수 ---
+        // --- 로고 동기화 전용 통합 함수 (공문서 로고 추가 연동) ---
         function syncAllLogos(srcUrl) {
             const logo1 = document.getElementById("mainLogo");
             const logo2 = document.getElementById("delivMainLogo");
+            const logo3 = document.getElementById("docMainLogo");
             if (logo1) { logo1.src = srcUrl; logo1.style.display = "block"; }
             if (logo2) { logo2.src = srcUrl; logo2.style.display = "block"; }
+            if (logo3) { logo3.src = srcUrl; logo3.style.display = "block"; }
         }
 
         document.getElementById("logoInput").addEventListener("change", function(e) {
@@ -564,6 +708,46 @@
             setTimeout(() => { btn.innerText = origin; btn.style.backgroundColor = "#27ae60"; }, 1500);
             window.getSelection().removeAllRanges();
         });
+
+        // --- [탭 4] 공문서 생성기 스크립트 ---
+        function execBold() {
+            document.execCommand('bold', false, null);
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
+                activeEl.focus();
+            }
+        }
+
+        async function downloadDocImage() {
+            const paper = document.querySelector('#section-doc #document-paper');
+            const button = document.querySelector('.btn-download-doc');
+            
+            if (document.activeElement) document.activeElement.blur();
+            button.innerText = "문서 변환 중...";
+            button.disabled = true;
+
+            try {
+                const canvas = await html2canvas(paper, {
+                    scale: 2, 
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: "#ffffff",
+                    width: 800,
+                    windowWidth: 800
+                });
+
+                const link = document.createElement('a');
+                link.download = `르노코리아_공문서_${new Date().getTime()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error("공문서 변환 실패:", err);
+                alert("공문서 변환 중 오류가 발생했습니다.");
+            } finally {
+                button.innerText = "공문서 다운로드 (PNG)";
+                button.disabled = false;
+            }
+        }
 
         // 초기 뷰 렌더링
         updateCardView();
