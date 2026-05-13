@@ -111,7 +111,7 @@
             font-family: 'Nanum Myeongjo', 'Malgun Gothic', serif; /* 공문서 본문 명조체 기본 적용 */
         }
 
-        /* 공문서 헤더 영역 (로고 10 : 글자 6 비율 구현) */
+        /* 공문서 헤더 영역 */
         .doc-header {
             display: flex;
             align-items: center;
@@ -131,7 +131,7 @@
         .doc-header .doc-title-text {
             font-size: 30pt; /* 글자 크기 비중 6 */
             font-weight: 900;
-            font-family: 'Inter', 'Pretendard', sans-serif; /* 타이틀은 현대적인 고딕 계열 */
+            font-family: 'Inter', 'Pretendard', sans-serif;
             letter-spacing: 1.5px;
             color: #111;
             line-height: 1;
@@ -167,7 +167,7 @@
 
         /* 하단 주소 영역 */
         .footer-divider { border-top: 1px solid #aaa; margin-bottom: 12px; }
-        .footer-info { font-size: 9.5pt; color: #555; line-height: 1.6; outline: none; font-family: 'Pretendard', sans-serif; border: 1px dashed transparent; padding: 2px; }
+        .footer-info { font-size: 9.5pt; color: #555; line-height: 1.6; outline: none; font-family: 'Pretendard', sans-serif; border: 1px dashed transparent; padding: 2px; text-align: center; }
         .footer-info:hover, .footer-info:focus { border-color: #ddd; background-color: #fafafa; }
     </style>
 </head>
@@ -411,8 +411,7 @@
 
                     <div class="footer-divider"></div>
                     
-                    <div class="footer-info" contenteditable="true">르노코리아 금정대리점: 부산광역시 금정구 중앙대로 1640(부곡동) 1층
-르노코리아 연제대리점: 부산광역시 연제구 과정로 205(연산동)</div>
+                    <div class="footer-info" contenteditable="true"><strong>르노코리아 금정대리점</strong>: 부산광역시 금정구 중앙대로 1640(부곡동) 1층 / <strong>르노코리아 연제대리점</strong>: 부산광역시 연제구 과정로 205(연산동)</div>
                 </div>
             </div>
         </div>
@@ -433,7 +432,7 @@
 
         lucide.createIcons();
 
-        // 4개 탭 통합 스위칭 로직 확장
+        // 4개 탭 통합 스위칭 로직
         function switchTab(tabId) {
             const tabs = ['sms', 'card', 'delivery', 'doc'];
             tabs.forEach(t => {
@@ -541,7 +540,7 @@
             window.getSelection().removeAllRanges();
         });
 
-        // --- 로고 동기화 전용 통합 함수 (공문서 로고 추가 연동) ---
+        // --- 로고 동기화 전용 통합 함수 ---
         function syncAllLogos(srcUrl) {
             const logo1 = document.getElementById("mainLogo");
             const logo2 = document.getElementById("delivMainLogo");
