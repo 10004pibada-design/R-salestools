@@ -98,7 +98,7 @@
         /* A4 비율의 공문서 페이퍼 */
         #document-paper {
             width: 800px;
-            height: 1131px; /* A4 비율 */
+            height: 1131px;
             background-color: white;
             padding: 65px 60px;
             box-sizing: border-box;
@@ -108,33 +108,43 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            font-family: 'Nanum Myeongjo', 'Malgun Gothic', serif; /* 공문서 본문 명조체 기본 적용 */
+            font-family: 'Nanum Myeongjo', 'Malgun Gothic', serif;
         }
 
-        /* 공문서 헤더 영역 */
+        /* [완벽한 수직 중앙 정렬을 위해 수정한 헤더 영역 CSS]
+           단순 Flexbox에 의존하지 않고 로고와 텍스트의 기준 높이를 75px로 통일하여 캡처 왜곡을 차단합니다.
+        */
         .doc-header {
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 15px;
+            gap: 18px;
             margin-bottom: 45px;
             border-bottom: 2px solid #333;
             padding-bottom: 15px;
+            height: 75px; /* 전체 박스 높이를 로고 기준에 맞춤 */
+            box-sizing: content-box;
         }
 
         .doc-header img.doc-logo {
-            height: 75px; /* 로고 크기 비중 10 */
+            height: 75px;
             width: auto;
             object-fit: contain;
+            display: block;
         }
 
         .doc-header .doc-title-text {
-            font-size: 30pt; /* 글자 크기 비중 6 */
+            font-size: 30pt;
             font-weight: 900;
             font-family: 'Inter', 'Pretendard', sans-serif;
             letter-spacing: 1.5px;
             color: #111;
-            line-height: 1;
+            /* 폰트 내장 여백에 의한 어긋남을 막기 위해 행간을 높이와 1:1 매칭하고 미세 보정 적용 */
+            line-height: 75px; 
+            height: 75px;
+            margin-top: 3px; 
+            display: flex;
+            align-items: center;
         }
 
         /* 수신~제목 테이블 */
