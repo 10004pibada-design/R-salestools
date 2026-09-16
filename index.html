@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
@@ -144,6 +145,74 @@
         .footer-divider { border-top: 1px solid #aaa; margin-bottom: 12px; }
         .footer-info { font-size: 9.5pt; color: #555; line-height: 1.6; outline: none; font-family: 'Pretendard', sans-serif; border: 1px dashed transparent; padding: 2px; text-align: center; }
         .footer-info:hover, .footer-info:focus { border-color: #ddd; background-color: #fafafa; }
+
+        /* --- [탭 5] 할부 계산기 전용 CSS --- */
+        .calc-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 16px; box-sizing: border-box; }
+        .calc-panel { background: #fff; width: 100%; max-width: 820px; padding: 24px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); box-sizing: border-box; margin-bottom: 20px; }
+        .calc-panel h2 { margin: 0 0 6px 0; font-size: 1.35rem; font-weight: 800; color: #111; letter-spacing: -0.5px; }
+        .calc-panel .calc-desc { margin: 0 0 22px; font-size: 0.85rem; color: #888; }
+
+        .calc-fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .calc-field { display: flex; flex-direction: column; }
+        .calc-field label { font-size: 0.8rem; font-weight: 700; color: #555; margin-bottom: 6px; }
+        .calc-field input, .calc-field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit; background: #fcfcfc; box-sizing: border-box; font-weight: 600; color: #111; }
+        .calc-field input:focus, .calc-field select:focus { outline: none; border-color: #111; background: #fff; box-shadow: 0 0 0 3px rgba(241,196,15,0.25); }
+        .calc-field .calc-unit { font-size: 0.72rem; color: #aaa; margin-top: 4px; }
+        .calc-field-full { grid-column: 1 / -1; }
+
+        .calc-method { display: flex; gap: 8px; margin-top: 20px; }
+        .calc-method-btn { flex: 1; padding: 13px 8px; border: 2px solid #e5e5e5; background: #fafafa; border-radius: 10px; font-size: 0.92rem; font-weight: 700; color: #777; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .calc-method-btn:hover { border-color: #ccc; }
+        .calc-method-btn.active { background: #111; border-color: #111; color: #f1c40f; }
+        .calc-method-btn small { display: block; font-size: 0.7rem; font-weight: 500; margin-top: 3px; opacity: 0.8; }
+
+        .calc-result { background: #fff; width: 100%; max-width: 820px; padding: 24px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); box-sizing: border-box; margin-bottom: 20px; }
+        .calc-empty { text-align: center; color: #aaa; font-size: 0.9rem; padding: 30px 0; margin: 0; }
+
+        .calc-hero { background: linear-gradient(135deg, #1a1a1a, #2c3e50); color: #fff; border-radius: 12px; padding: 22px 20px; text-align: center; margin-bottom: 20px; }
+        .calc-hero-label { font-size: 0.8rem; color: #f1c40f; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .calc-big { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; line-height: 1.15; word-break: keep-all; }
+        .calc-big span { font-size: 1rem; font-weight: 600; margin-left: 4px; opacity: 0.85; }
+        .calc-hero-sub { font-size: 0.78rem; color: #bbb; margin-top: 8px; }
+
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .calc-cell { background: #f8f9fa; border: 1px solid #eee; border-radius: 10px; padding: 12px 10px; text-align: center; }
+        .calc-cell-label { font-size: 0.72rem; color: #888; font-weight: 600; margin-bottom: 5px; }
+        .calc-cell-value { font-size: 0.95rem; font-weight: 800; color: #111; word-break: break-all; }
+        .calc-cell-sub { font-size: 0.68rem; color: #aaa; margin-top: 3px; }
+
+        .calc-section-title { font-size: 0.9rem; font-weight: 800; color: #333; margin: 26px 0 12px; border-left: 4px solid #f1c40f; padding-left: 9px; }
+        .calc-chart-box { height: 260px; width: 100%; }
+
+        .calc-toggle-btn { width: 100%; padding: 12px; background: #f1f3f5; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.88rem; font-weight: 700; color: #444; cursor: pointer; font-family: inherit; }
+        .calc-toggle-btn:hover { background: #e9ecef; }
+        #calcScheduleScroll { max-height: 260px; overflow-y: auto; margin-top: 10px; border: 1px solid #eee; border-radius: 8px; transition: max-height 0.3s; }
+        #calcScheduleScroll.expanded { max-height: 1200px; }
+        .calc-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .calc-table thead th { position: sticky; top: 0; background: #2c3e50; color: #fff; padding: 9px 6px; font-weight: 700; font-size: 0.75rem; white-space: nowrap; }
+        .calc-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid #f2f2f2; font-variant-numeric: tabular-nums; }
+        .calc-table td.col-no { text-align: center; color: #888; font-weight: 700; }
+        .calc-table td.col-pay { font-weight: 700; color: #111; }
+        .calc-table td.col-int { color: #c0392b; }
+        .calc-table tbody tr:nth-child(even) { background: #fcfcfc; }
+        .calc-table tr.calc-total-row td { background: #fff8e1; font-weight: 800; color: #111; border-top: 2px solid #f1c40f; }
+
+        .calc-actions { display: flex; gap: 10px; width: 100%; max-width: 820px; align-items: stretch; }
+        .calc-actions button { flex: 1; padding: 15px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; color: #fff; cursor: pointer; font-family: inherit; }
+        .calc-notice { max-width: 820px; width: 100%; font-size: 0.75rem; color: #999; line-height: 1.6; margin-top: 16px; box-sizing: border-box; }
+
+        @media (max-width: 640px) {
+            .calc-panel, .calc-result { padding: 18px 14px; }
+            .calc-fields { grid-template-columns: 1fr; gap: 12px; }
+            .calc-grid { grid-template-columns: repeat(2, 1fr); }
+            .calc-big { font-size: 1.6rem; }
+            .calc-big span { display: block; margin-left: 0; font-size: 0.85rem; }
+            .calc-method { flex-direction: column; }
+            .calc-actions { flex-direction: column; }
+            .calc-chart-box { height: 220px; }
+            .calc-table { font-size: 0.72rem; }
+            .calc-table td, .calc-table thead th { padding: 7px 4px; }
+        }
     </style>
 </head>
 <body>
@@ -161,7 +230,7 @@
     <div id="main-content">
         <div class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-center space-x-1.5 sm:space-x-2 py-4">
+                <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2 py-4">
                     <button id="tab-btn-sms" onclick="switchTab('sms')" class="px-4 sm:px-5 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
                         <i data-lucide="message-square-text" class="w-4 h-4 sm:w-5 sm:h-5"></i> 시승 예약
                     </button>
@@ -173,6 +242,9 @@
                     </button>
                     <button id="tab-btn-doc" onclick="switchTab('doc')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
                         <i data-lucide="file-text" class="w-4 h-4 sm:w-5 sm:h-5"></i> 공문 작성
+                    </button>
+                    <button id="tab-btn-calc" onclick="switchTab('calc')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
+                        <i data-lucide="calculator" class="w-4 h-4 sm:w-5 sm:h-5"></i> 할부 계산
                     </button>
                 </div>
             </div>
@@ -382,6 +454,101 @@
             </div>
         </div>
 
+        <section id="section-calc" class="calc-wrapper hidden">
+            <div class="calc-panel">
+                <h2>🚗 할부 계산기</h2>
+                <p class="calc-desc">차량 가격과 조건을 입력하면 월 납입금·총 이자·상환 스케줄이 즉시 계산됩니다.</p>
+
+                <div class="calc-fields">
+                    <div class="calc-field">
+                        <label for="calcPrice">차량 총 가격 (원)</label>
+                        <input type="text" id="calcPrice" inputmode="numeric" value="42,000,000" placeholder="예: 42,000,000">
+                        <span class="calc-unit">부대비용 포함 총액으로 입력</span>
+                    </div>
+
+                    <div class="calc-field">
+                        <label for="calcDown">선수금 / 현금 납입 (원)</label>
+                        <input type="text" id="calcDown" inputmode="numeric" value="0" placeholder="예: 5,000,000">
+                        <span class="calc-unit">아래 비율로 입력해도 자동 환산</span>
+                    </div>
+
+                    <div class="calc-field">
+                        <label for="calcDownRate">선수금 비율 (%)</label>
+                        <input type="text" id="calcDownRate" inputmode="decimal" value="0" placeholder="예: 30">
+                        <span class="calc-unit">입력 시 선수금 금액 자동 계산</span>
+                    </div>
+
+                    <div class="calc-field">
+                        <label for="calcPrincipal">할부 원금 (원)</label>
+                        <input type="text" id="calcPrincipal" inputmode="numeric" value="42,000,000">
+                        <span class="calc-unit">차량가 − 선수금 (직접 수정 가능)</span>
+                    </div>
+
+                    <div class="calc-field">
+                        <label for="calcMonths">할부 개월 수</label>
+                        <select id="calcMonths">
+                            <option value="12">12개월</option>
+                            <option value="24">24개월</option>
+                            <option value="36">36개월</option>
+                            <option value="48">48개월</option>
+                            <option value="60" selected>60개월</option>
+                            <option value="72">72개월</option>
+                            <option value="84">84개월</option>
+                            <option value="custom">직접 입력</option>
+                        </select>
+                        <input type="text" id="calcMonthsCustom" inputmode="numeric" placeholder="개월 수 직접 입력" style="display:none; margin-top:8px;">
+                    </div>
+
+                    <div class="calc-field">
+                        <label for="calcRate">연 이자율 (%)</label>
+                        <input type="text" id="calcRate" inputmode="decimal" value="3.7" placeholder="예: 3.7">
+                        <span class="calc-unit">월 이자율 = 연 이자율 ÷ 12</span>
+                    </div>
+                </div>
+
+                <div class="calc-method">
+                    <button type="button" class="calc-method-btn active" data-method="equalPayment">원리금 균등<small>매월 납입금 동일</small></button>
+                    <button type="button" class="calc-method-btn" data-method="equalPrincipal">원금 균등<small>매월 납입금 감소 · 총이자 적음</small></button>
+                </div>
+            </div>
+
+            <div class="calc-result" id="calcResultArea">
+                <div id="calcSummary"></div>
+
+                <h3 class="calc-section-title">회차별 원금 · 이자 구성</h3>
+                <div class="calc-chart-box"><canvas id="calcChart"></canvas></div>
+
+                <h3 class="calc-section-title">상환 스케줄</h3>
+                <div id="calcScheduleWrap" style="display:none;">
+                    <button type="button" class="calc-toggle-btn" id="calcToggleSchedule">▼ 전체 상환 스케줄 펼쳐보기</button>
+                    <div id="calcScheduleScroll">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+                                    <th>회차</th><th>월납입금</th><th>납입원금</th><th>이자</th><th>잔금</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calcScheduleBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calc-actions">
+                <select id="calcRepSelect" class="doc-rep-select" style="flex:1;">
+                    <option value="lee">이상헌 팀장</option>
+                    <option value="kang">강명수 소장</option>
+                    <option value="kwon">권성호 파트장</option>
+                </select>
+                <button type="button" id="calcCopyBtn" style="background-color:#27ae60;">📋 견적 문구 복사</button>
+                <button type="button" id="calcSaveImgBtn" style="background-color:#2c3e50;">📸 견적 이미지 저장</button>
+            </div>
+
+            <p class="calc-notice">※ 본 계산 결과는 <strong>엑셀 원본 수식(원리금 균등 PMT · 원금 균등)</strong>을 그대로 적용한 참고용 예상 금액입니다. 실제 승인 금리, 취득·등록세, 보험료, 캐피탈사 수수료에 따라 최종 금액은 달라질 수 있습니다.</p>
+
+            <textarea id="calcHiddenText" style="display:none;"></textarea>
+        </section>
+
     </div>
 
     <script>
@@ -398,14 +565,15 @@
 
         lucide.createIcons();
 
-        // 4개 탭 통합 스위칭 로직
+        // 5개 탭 통합 스위칭 로직
         function switchTab(tabId) {
-            const tabs = ['sms', 'card', 'delivery', 'doc'];
+            const tabs = ['sms', 'card', 'delivery', 'doc', 'calc'];
             tabs.forEach(t => {
                 const sec = document.getElementById(`section-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if (t === tabId) {
                     sec.style.display = 'flex';
+                    if (t === 'calc' && typeof window.renderLoanCalc === 'function') window.renderLoanCalc();
                     btn.className = "px-4 sm:px-5 py-2.5 bg-black text-yellow-400 font-bold rounded-lg shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base";
                 } else {
                     sec.style.display = 'none';
@@ -695,6 +863,8 @@
         updateCardView();
         updateDeliveryView();
         updateDocSender();
+        lucide.createIcons();
     </script>
+    <script src="js/loan.js"></script>
 </body>
 </html>
