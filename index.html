@@ -462,26 +462,26 @@
                 <div class="calc-fields">
                     <div class="calc-field">
                         <label for="calcPrice">차량 총 가격 (원)</label>
-                        <input type="text" id="calcPrice" inputmode="numeric" value="42,000,000" placeholder="예: 42,000,000">
+                        <input type="text" id="calcPrice" inputmode="numeric" value="0" placeholder="예: 42,000,000">
                         <span class="calc-unit">부대비용 포함 총액으로 입력</span>
                     </div>
 
                     <div class="calc-field">
                         <label for="calcDown">선수금 / 현금 납입 (원)</label>
                         <input type="text" id="calcDown" inputmode="numeric" value="0" placeholder="예: 5,000,000">
-                        <span class="calc-unit">아래 비율로 입력해도 자동 환산</span>
+                        <span class="calc-unit">비율 입력 시 자동 반영 · 직접 수정도 가능</span>
                     </div>
 
                     <div class="calc-field">
                         <label for="calcDownRate">선수금 비율 (%)</label>
-                        <input type="text" id="calcDownRate" inputmode="decimal" value="0" placeholder="예: 30">
-                        <span class="calc-unit">입력 시 선수금 금액 자동 계산</span>
+                        <input type="text" id="calcDownRate" inputmode="decimal" value="" placeholder="미입력 시 수동 사용">
+                        <span class="calc-unit">입력하면 선수금 금액이 자동 계산됩니다</span>
                     </div>
 
                     <div class="calc-field">
                         <label for="calcPrincipal">할부 원금 (원)</label>
-                        <input type="text" id="calcPrincipal" inputmode="numeric" value="42,000,000">
-                        <span class="calc-unit">차량가 − 선수금 (직접 수정 가능)</span>
+                        <input type="text" id="calcPrincipal" inputmode="numeric" value="0">
+                        <span class="calc-unit">차량가 − 선수금 자동 계산 · 직접 수정도 가능</span>
                     </div>
 
                     <div class="calc-field">
