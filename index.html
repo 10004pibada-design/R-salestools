@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- R Sales Tools 2026 Restyle - Renault Group brand tokens applied. All original logic preserved. -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -11,209 +12,407 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        /* 공문서 전용 명조체 로드 */
-        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
-        
-        body { font-family: 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f0f2f5; margin: 0; }
-        .transition-all { transition: all 0.3s ease-in-out; }
+/* =============================================================
+   R Sales Tools — Design System Tokens
+   르노코리아 영업사원 통합 업무 툴
+   -------------------------------------------------------------
+   Source of truth for all colors, type, spacing, radii, shadows.
+   Import in any HTML/component: <link rel="stylesheet" href="../colors_and_type.css">
+   ============================================================= */
 
-        /* 보안/비밀번호 화면 CSS */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #222; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: white; }
-        .auth-box { background: white; padding: 40px; border-radius: 12px; text-align: center; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 400px; }
-        .auth-box h2 { margin-top: 0; font-weight: 800; font-size: 1.5rem; margin-bottom: 10px; }
-        .auth-box p { color: #666; margin-bottom: 20px; font-size: 0.95rem; }
-        .auth-box input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; text-align: center; }
-        .auth-box button { width: 100%; background: #111; color: #f1c40f; padding: 14px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .auth-box button:hover { background: #333; }
-        .error-msg { color: #d32f2f; font-size: 0.85rem; margin-bottom: 15px; display: none; font-weight: bold; }
-        
-        #main-content { display: none; }
+/* ── Web fonts ─────────────────────────────────────────────── */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+/* Manrope = closest freely-available substitute for Renault's proprietary
+   "Read" typeface (geometric humanist sans, low contrast, open apertures). */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
 
-        /* 공통 폼 및 컨테이너 CSS */
-        .tab-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
-        .form-container { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 550px; box-sizing: border-box; }
-        .form-container h2 { text-align: center; color: #222; margin-top: 0; margin-bottom: 25px; letter-spacing: -1px; font-weight: bold; font-size: 1.5rem; }
-        .form-group { margin-bottom: 18px; width: 100%; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; color: #444; font-size: 14px; }
-        .form-container input[type="text"], .form-container input[type="date"], .form-container select, .form-container textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 15px; transition: all 0.3s; }
-        .form-container input:focus, .form-container select:focus, .form-container textarea:focus { border-color: #0056b3; outline: none; box-shadow: 0 0 0 3px rgba(0,86,179,0.1); }
-        .form-container textarea { resize: vertical; line-height: 1.6; }
-        
-        #rawMessage { height: 120px; background-color: #fafafa; border: 2px dashed #ccc; }
-        #result { height: 280px; background-color: #ffffff; font-size: 14px; }
-        
-        .action-btn { width: 100%; padding: 14px; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .action-btn:active { transform: scale(0.97); }
-        .btn-parse { background-color: #f39c12; }
-        .btn-parse:hover { background-color: #e67e22; }
-        .btn-generate { background-color: #2c3e50; }
-        .btn-generate:hover { background-color: #1a252f; }
-        .btn-copy { background-color: #27ae60; margin-bottom: 0; }
-        .btn-copy:hover { background-color: #219150; }
-        .form-container hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
-        .highlight-flash { background-color: #fff3cd !important; }
+:root {
+  /* ── BRAND — Renault Ink + Renault Yellow ──────────────────
+     현행 사이트가 이미 채택 중인 "칠흑 검정 + 시그니처 옐로우"
+     조합을 브랜드 코어로 확정. 르노 그룹 2021 리브랜드의 
+     high-contrast 미학과 일치. */
+  /* Source: brand.renault.com · pickcoloronline.com/brands/renault-group
+     Yellow(#EFDF00) 와 Black(#000000) 이 르노 그룹 공식 지정색. */
+  --brand-yellow:      #EFDF00;   /* Renault Yellow (공식 · electric lemon) */
+  --brand-yellow-warm: #F5E94A;   /* Yellow tint — hover / 배경 러닝 */
+  --brand-yellow-deep: #C7BA00;   /* Yellow shade — 다크 컨텍스트 텍스트 */
+  --brand-yellow-soft: #FFFCD9;   /* Yellow 5% — 섬세한 배경 하이라이트 */
 
-        /* 모바일 카드 뷰 전용 CSS */
-        .card-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: #333; }
-        .admin-panel { background: #fff; width: 100%; max-width: 420px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
-        .admin-panel h3 { margin: 0 0 15px 0; font-size: 1rem; color: #555; border-left: 4px solid #f1c40f; padding-left: 10px; font-weight: bold; }
-        .row-inputs { display: flex; gap: 10px; margin-bottom: 10px; }
-        .admin-panel select, .admin-panel input[type="text"] { flex: 1; padding: 12px; font-size: 0.95rem; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; box-sizing: border-box; width: 100%; margin-bottom: 10px; }
-        .file-upload-wrapper { position: relative; width: 100%; margin-bottom: 8px; }
-        .file-upload-btn { display: block; width: 100%; box-sizing: border-box; padding: 12px; background-color: #f8f9fa; color: #333; text-align: center; border-radius: 8px; font-size: 0.9rem; font-weight: bold; border: 1px solid #ccc; cursor: pointer; }
-        .file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-        .logo-btn { background-color: #fff8e1; border-color: #f1c40f; color: #856404; }
-        .btn-save { width: 100%; padding: 15px; background-color: #111; color: #f1c40f; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .guide-text { font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center; }
+  --brand-black:       #000000;   /* Renault Black (공식 · 순수 검정) */
+  --brand-ink:         #000000;   /* alias */
+  --brand-ink-2:       #0A0A0A;   /* 그라디언트 헤드 (거의 순검) */
+  --brand-ink-3:       #1D1E21;   /* 그라디언트 테일 (n-800) */
+  --brand-white:       #FFFFFF;
 
-        .mobile-card { background: #fff; width: 100%; max-width: 400px; overflow: hidden; position: relative; border: 1px solid #eee; box-sizing: border-box; }
-        .card-header { padding: 15px 20px; text-align: center; border-bottom: 1px solid #f8f8f8; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .card-header img.logo { max-height: 45px; width: auto; margin-bottom: 8px; }
-        .card-header .branch { font-size: 0.8rem; color: #777; line-height: 1.5; font-weight: 500; }
-        
-        .hero { position: relative; width: 100%; height: 230px; background-color: #222; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .hero .placeholder { position: absolute; color: #aaa; font-size: 0.95rem; z-index: 1; text-align: center; }
-        .hero img.car-photo { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 2; display: none; }
-        
-        .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 18px 20px; color: white; z-index: 3; text-align: left; }
-        .hero-overlay h2 { margin: 0; font-size: 1.7rem; font-weight: 800; font-style: italic; letter-spacing: 1px; }
-        .hero-overlay p { margin: 3px 0 0; font-size: 0.95rem; color: #f1c40f; font-weight: 600; }
-        .card-content { padding: 25px 20px; }
-        .editable { border: 1px dashed transparent; transition: 0.2s; cursor: text; border-radius: 4px; padding: 2px; }
-        .editable:hover, .editable:focus { outline: none; border-color: #f1c40f; background: #fffdf0; }
-        .message { font-size: 0.95rem; line-height: 1.6; color: #444; margin-bottom: 20px; word-break: keep-all; }
-        .contact-area { text-align: center; padding-top: 15px; border-top: 1px solid #eee; }
-        .rep-info { font-size: 1.15rem; font-weight: 700; color: #111; margin-bottom: 5px; }
-        .rep-phone { font-size: 1.6rem; font-weight: 800; color: #0000ee; letter-spacing: 0.5px; }
+  /* Renault Group 지정 그레이 3단(#D9D9D6 · #BBBCBC · #888B8D)을 중심으로
+     워크 툴에 필요한 보간을 추가. 약간 웜-쿨 뉴트럴(설록 색상). */
+  --n-0:   #FFFFFF;                /* Renault White */
+  --n-25:  #FCFCFB;
+  --n-50:  #F7F7F5;                /* Yellow 5% tinted paper */
+  --n-100: #F1F1EF;
+  --n-150: #EDEDEB;                /* App background */
+  --n-200: #D9D9D6;                /* Renault Gray 1 (공식) */
+  --n-300: #C5C5C2;
+  --n-400: #BBBCBC;                /* Renault Gray 2 (공식) */
+  --n-500: #888B8D;                /* Renault Gray 3 (공식) */
+  --n-600: #63656B;
+  --n-700: #3D3F44;
+  --n-800: #1D1E21;
+  --n-900: #000000;                /* Renault Black */
 
-        /* --- [탭 4] 공문서 생성기 전용 CSS --- */
-        .doc-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; box-sizing: border-box; }
-        .doc-controls { width: 100%; max-width: 800px; background: white; padding: 15px 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap; gap: 10px; }
-        .btn-bold { background-color: #6c757d; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; font-size: 0.95rem; }
-        .btn-bold:hover { background-color: #5a6268; }
-        .btn-download-doc { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; font-size: 0.95rem; }
-        .btn-download-doc:hover { background-color: #0056b3; }
-        .doc-rep-select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; background: #fafafa; font-weight: 600; color: #111; }
+  /* ── TEXT (Semantic) ─────────────────────────────────────── */
+  --fg-1:      var(--n-900);   /* Primary text */
+  --fg-2:      #444444;        /* Body text */
+  --fg-3:      #777777;        /* Muted / label */
+  --fg-4:      #aaaaaa;        /* Hint / disabled */
+  --fg-on-dark: #ffffff;
+  --fg-on-yellow: #000000;
 
-        /* A4 비율의 공문서 페이퍼 */
-        #document-paper {
-            width: 800px;
-            height: 1131px;
-            background-color: white;
-            padding: 65px 60px;
-            box-sizing: border-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            position: relative;
-            color: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-family: 'Nanum Myeongjo', 'Malgun Gothic', serif;
-        }
+  /* ── SURFACES ────────────────────────────────────────────── */
+  --surface:        var(--n-0);
+  --surface-alt:    var(--n-50);
+  --surface-sunken: var(--n-150);
+  --surface-dark:   var(--n-900);
+  --surface-blur:   rgba(255,255,255,0.86);
+  --divider:        #eeeeee;
+  --divider-strong: #dddddd;
 
-        /* 수신~제목 테이블 */
-        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Pretendard', sans-serif; }
-        .info-table td { padding: 8px 0; font-size: 13pt; vertical-align: top; line-height: 1.4; }
-        .info-label { width: 90px; font-weight: bold; letter-spacing: 4px; color: #222; }
-        .doc-target-input { border: 1px dashed transparent; width: 100%; transition: 0.2s; }
-        .doc-target-input:hover, .doc-target-input:focus { background-color: #fdfdfd; border-color: #ccc; outline: none; }
+  /* ── SEMANTIC (Actions & States) ─────────────────────────── */
+  /* Renault 브랜드는 컬러풀 UI를 피하고 모노크로+Yellow 강조로 마감.
+     CTA 는 색이 아니라 「Ink 블록 · Yellow 강조 · Outline」 역할로 구분. */
+  --action-primary:      var(--brand-black);     /* Black bg + Yellow 텍스트 = 대표 CTA */
+  --action-primary-hov:  var(--n-800);
+  --action-yellow:       var(--brand-yellow);    /* Yellow bg + Black 텍스트 = 브랜드 CTA */
+  --action-yellow-hov:   var(--brand-yellow-warm);
+  --action-parse:        var(--brand-black);     /* 파싱 = Black + Yellow outline */
+  --action-parse-hov:    var(--n-800);
+  --action-copy:         var(--brand-yellow);    /* 복사 = Yellow bg (성공/확정 액센트) */
+  --action-copy-hov:     var(--brand-yellow-warm);
+  --action-navy:         var(--brand-black);     /* 다운로드 = Black */
+  --action-navy-hov:     var(--n-800);
+  --action-ghost-bg:     var(--n-100);
+  --action-info:         var(--brand-black);     /* Focus / 링크 = Black */
+  --state-danger:        #C0392B;                /* 이자 / 위험 — semantic 유지 */
+  --state-warn-bg:       var(--brand-yellow-soft);
+  --state-success:       var(--brand-yellow);
+  --state-focus-ring:    rgba(239,223,0,0.45);   /* Yellow focus ring */
+  --state-focus-blue:    rgba(0,0,0,0.10);
+  --state-link:          var(--brand-black);     /* 전화번호 링크 = Black + 밑줄 */
 
-        .divider-thick { border-top: 2px solid #000; margin: 10px 0 35px 0; }
+  /* ── ELEVATION ───────────────────────────────────────────── */
+  --shadow-sm:  0 1px 2px  rgba(0,0,0,0.04);
+  --shadow-md:  0 2px 4px  rgba(0,0,0,0.06);
+  --shadow-lg:  0 4px 15px rgba(0,0,0,0.10);   /* admin panel */
+  --shadow-xl:  0 6px 20px rgba(0,0,0,0.08);   /* calc panel */
+  --shadow-2xl: 0 10px 25px rgba(0,0,0,0.10);  /* form container */
+  --shadow-3xl: 0 10px 30px rgba(0,0,0,0.15);  /* doc paper */
+  --shadow-focus: 0 0 0 3px var(--state-focus-ring);
 
-        /* 본문 영역 */
-        .doc-content-area {
-            flex-grow: 1;
-            font-size: 12.5pt;
-            line-height: 2.1;
-            white-space: pre-wrap;
-            outline: none;
-            word-break: keep-all;
-            border: 1px dashed transparent;
-            padding: 5px;
-            transition: 0.2s;
-        }
-        .doc-content-area:hover, .doc-content-area:focus { border-color: #ddd; background-color: #fafafa; }
+  /* ── RADII ───────────────────────────────────────────────── */
+  --r-xs: 4px;
+  --r-sm: 6px;    /* inputs */
+  --r-md: 8px;    /* buttons */
+  --r-lg: 10px;   /* alt cards */
+  --r-xl: 12px;   /* main cards, admin panel */
+  --r-2xl: 14px;  /* calc panels */
+  --r-pill: 999px;
 
-        /* 발신인 영역 */
-        .sender-section { text-align: center; margin-top: 40px; margin-bottom: 50px; font-family: 'Pretendard', sans-serif; }
-        .sender-name { font-size: 20pt; font-weight: bold; line-height: 1.5; outline: none; display: inline-block; border: 1px dashed transparent; padding: 5px 15px; }
-        .sender-name:hover, .sender-name:focus { border-color: #ccc; background-color: #fafafa; }
+  /* ── SPACING (4-based) ──────────────────────────────────── */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+  --s-9: 56px;
+  --s-10: 72px;
 
-        /* 하단 주소 영역 */
-        .footer-divider { border-top: 1px solid #aaa; margin-bottom: 12px; }
-        .footer-info { font-size: 9.5pt; color: #555; line-height: 1.6; outline: none; font-family: 'Pretendard', sans-serif; border: 1px dashed transparent; padding: 2px; text-align: center; }
-        .footer-info:hover, .footer-info:focus { border-color: #ddd; background-color: #fafafa; }
+  /* ── TYPOGRAPHY ─────────────────────────────────────────── */
+  --font-sans:    'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Manrope = Renault "Read" 근사치 (기하학적 휴머니스트 sans, low contrast).
+     순정 Read 파일 확보 시 이 변수만 교체하면 전 시스템에 반영됨. */
+  --font-brand:   'Manrope', 'Pretendard', -apple-system, sans-serif;
+  --font-latin:   'Manrope', 'Pretendard', sans-serif;                    /* alias */
+  --font-serif:   'Nanum Myeongjo', 'Malgun Gothic', serif;               /* 공문서 전용 */
+  --font-mono:    ui-monospace, SFMono-Regular, 'SF Mono', Consolas, monospace;
 
-        /* --- [탭 5] 할부 계산기 전용 CSS --- */
-        .calc-wrapper { display: flex; flex-direction: column; align-items: center; padding: 40px 16px; box-sizing: border-box; }
-        .calc-panel { background: #fff; width: 100%; max-width: 820px; padding: 24px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); box-sizing: border-box; margin-bottom: 20px; }
-        .calc-panel h2 { margin: 0 0 6px 0; font-size: 1.35rem; font-weight: 800; color: #111; letter-spacing: -0.5px; }
-        .calc-panel .calc-desc { margin: 0 0 22px; font-size: 0.85rem; color: #888; }
+  /* 크기 스케일 — 모바일 우선 (base 16px) */
+  --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px;
+  --fs-15: 15px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
+  --fs-24: 24px; --fs-28: 28px; --fs-32: 32px; --fs-40: 40px;
 
-        .calc-fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .calc-field { display: flex; flex-direction: column; }
-        .calc-field label { font-size: 0.8rem; font-weight: 700; color: #555; margin-bottom: 6px; }
-        .calc-field input, .calc-field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit; background: #fcfcfc; box-sizing: border-box; font-weight: 600; color: #111; }
-        .calc-field input:focus, .calc-field select:focus { outline: none; border-color: #111; background: #fff; box-shadow: 0 0 0 3px rgba(241,196,15,0.25); }
-        .calc-field .calc-unit { font-size: 0.72rem; color: #aaa; margin-top: 4px; }
-        .calc-field-full { grid-column: 1 / -1; }
+  /* 라인/트래킹 */
+  --lh-tight: 1.15;
+  --lh-snug:  1.35;
+  --lh-body:  1.55;
+  --lh-loose: 1.8;
+  --lh-doc:   2.1;  /* 공문서 본문 */
 
-        .calc-method { display: flex; gap: 8px; margin-top: 20px; }
-        .calc-method-btn { flex: 1; padding: 13px 8px; border: 2px solid #e5e5e5; background: #fafafa; border-radius: 10px; font-size: 0.92rem; font-weight: 700; color: #777; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .calc-method-btn:hover { border-color: #ccc; }
-        .calc-method-btn.active { background: #111; border-color: #111; color: #f1c40f; }
-        .calc-method-btn small { display: block; font-size: 0.7rem; font-weight: 500; margin-top: 3px; opacity: 0.8; }
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-label: 4px;   /* 공문서 "수 신 :" 등 라벨 */
 
-        .calc-result { background: #fff; width: 100%; max-width: 820px; padding: 24px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); box-sizing: border-box; margin-bottom: 20px; }
-        .calc-empty { text-align: center; color: #aaa; font-size: 0.9rem; padding: 30px 0; margin: 0; }
+  /* ── MOTION ─────────────────────────────────────────────── */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 400ms;
 
-        .calc-hero { background: linear-gradient(135deg, #1a1a1a, #2c3e50); color: #fff; border-radius: 12px; padding: 22px 20px; text-align: center; margin-bottom: 20px; }
-        .calc-hero-label { font-size: 0.8rem; color: #f1c40f; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .calc-big { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; line-height: 1.15; word-break: keep-all; }
-        .calc-big span { font-size: 1rem; font-weight: 600; margin-left: 4px; opacity: 0.85; }
-        .calc-hero-sub { font-size: 0.78rem; color: #bbb; margin-top: 8px; }
+  /* ── LAYOUT ─────────────────────────────────────────────── */
+  --w-mobile-card: 400px;   /* 시승 감사 / 출고 카드 */
+  --w-form:        550px;   /* SMS 폼 */
+  --w-calc:        820px;   /* 할부 계산기 */
+  --w-doc:         800px;   /* 공문서 A4 */
+  --h-doc:         1131px;
+  --hit-min:       44px;    /* 최소 터치 타깃 */
+}
 
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calc-cell { background: #f8f9fa; border: 1px solid #eee; border-radius: 10px; padding: 12px 10px; text-align: center; }
-        .calc-cell-label { font-size: 0.72rem; color: #888; font-weight: 600; margin-bottom: 5px; }
-        .calc-cell-value { font-size: 0.95rem; font-weight: 800; color: #111; word-break: break-all; }
-        .calc-cell-sub { font-size: 0.68rem; color: #aaa; margin-top: 3px; }
+/* =============================================================
+   Semantic type classes — 어디서든 재사용 가능한 텍스트 프리셋
+   ============================================================= */
 
-        .calc-section-title { font-size: 0.9rem; font-weight: 800; color: #333; margin: 26px 0 12px; border-left: 4px solid #f1c40f; padding-left: 9px; }
-        .calc-chart-box { height: 260px; width: 100%; }
+.t-display {
+  font-family: var(--font-brand);
+  font-size: var(--fs-40);
+  font-weight: 800;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-1);
+  /* Renault 벡터형 표기는 upright + 준공업 톤이 기본. 이탤릭 제거. */
+}
+.t-h1 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-28);
+  font-weight: 800;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-1);
+}
+.t-h2 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-20);
+  font-weight: 700;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.01em;
+  color: var(--fg-1);
+}
+.t-h3 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-16);
+  font-weight: 700;
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+.t-body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-15);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  color: var(--fg-2);
+}
+.t-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--fs-13);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  color: var(--fg-2);
+}
+.t-label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  line-height: var(--lh-snug);
+  color: #444;
+}
+.t-caption {
+  font-family: var(--font-sans);
+  font-size: var(--fs-12);
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  color: var(--fg-3);
+}
+.t-num {
+  font-family: var(--font-brand);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  color: var(--fg-1);
+  letter-spacing: var(--tracking-tight);
+}
+.t-doc-body {
+  font-family: var(--font-serif);
+  font-size: 12.5pt;
+  line-height: var(--lh-doc);
+  color: #000;
+  word-break: keep-all;
+}
+.t-doc-label {
+  font-family: var(--font-sans);
+  font-size: 13pt;
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  color: #222;
+}
 
-        .calc-toggle-btn { width: 100%; padding: 12px; background: #f1f3f5; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.88rem; font-weight: 700; color: #444; cursor: pointer; font-family: inherit; }
-        .calc-toggle-btn:hover { background: #e9ecef; }
-        #calcScheduleScroll { max-height: 260px; overflow-y: auto; margin-top: 10px; border: 1px solid #eee; border-radius: 8px; transition: max-height 0.3s; }
-        #calcScheduleScroll.expanded { max-height: 1200px; }
-        .calc-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .calc-table thead th { position: sticky; top: 0; background: #2c3e50; color: #fff; padding: 9px 6px; font-weight: 700; font-size: 0.75rem; white-space: nowrap; }
-        .calc-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid #f2f2f2; font-variant-numeric: tabular-nums; }
-        .calc-table td.col-no { text-align: center; color: #888; font-weight: 700; }
-        .calc-table td.col-pay { font-weight: 700; color: #111; }
-        .calc-table td.col-int { color: #c0392b; }
-        .calc-table tbody tr:nth-child(even) { background: #fcfcfc; }
-        .calc-table tr.calc-total-row td { background: #fff8e1; font-weight: 800; color: #111; border-top: 2px solid #f1c40f; }
+/* 유틸 */
+.t-mono   { font-family: var(--font-mono); }
+.t-italic { font-style: italic; }
+.t-upper  { text-transform: uppercase; letter-spacing: var(--tracking-wide); }
 
-        .calc-actions { display: flex; gap: 10px; width: 100%; max-width: 820px; align-items: stretch; }
-        .calc-actions button { flex: 1; padding: 15px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; color: #fff; cursor: pointer; font-family: inherit; }
-        .calc-notice { max-width: 820px; width: 100%; font-size: 0.75rem; color: #999; line-height: 1.6; margin-top: 16px; box-sizing: border-box; }
 
-        @media (max-width: 640px) {
-            .calc-panel, .calc-result { padding: 18px 14px; }
-            .calc-fields { grid-template-columns: 1fr; gap: 12px; }
-            .calc-grid { grid-template-columns: repeat(2, 1fr); }
-            .calc-big { font-size: 1.6rem; }
-            .calc-big span { display: block; margin-left: 0; font-size: 0.85rem; }
-            .calc-method { flex-direction: column; }
-            .calc-actions { flex-direction: column; }
-            .calc-chart-box { height: 220px; }
-            .calc-table { font-size: 0.72rem; }
-            .calc-table td, .calc-table thead th { padding: 7px 4px; }
-        }
-    </style>
+/* R Sales Tools 2026 restyle */
+*{box-sizing:border-box}
+body{font-family:var(--font-sans);background:var(--n-150);margin:0;color:var(--fg-1);-webkit-font-smoothing:antialiased}
+.hidden{display:none}
+.transition-all{transition:all var(--dur-base) var(--ease-out)}
+#auth-screen{position:fixed;inset:0;background:#0a0a0a;display:flex;justify-content:center;align-items:center;z-index:9999;color:#fff;padding:24px}
+#auth-screen::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(239,223,0,0.05),transparent 40%),radial-gradient(circle at 80% 70%,rgba(29,30,33,0.6),transparent 50%);pointer-events:none}
+.auth-box{position:relative;background:#fff;padding:44px 32px 32px;border-radius:var(--r-xl);text-align:center;color:var(--fg-1);box-shadow:0 20px 60px rgba(0,0,0,0.5);width:90%;max-width:400px}
+.auth-box::before{content:"";display:block;width:44px;height:70px;margin:0 auto 20px;background-color:var(--brand-black);-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 480' fill='black' fill-rule='evenodd'><path d='M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z'/></svg>") no-repeat center/contain;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 480' fill='black' fill-rule='evenodd'><path d='M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z'/></svg>") no-repeat center/contain}
+.auth-box h2{margin:0 0 8px;font:800 22px/1.2 var(--font-sans);letter-spacing:-.02em}
+.auth-box p{color:var(--fg-3);margin-bottom:24px;font-size:14px}
+.auth-box input{width:100%;padding:14px 16px;border:2px solid var(--divider-strong);border-radius:var(--r-md);margin-bottom:12px;font:600 15px var(--font-sans);text-align:center;letter-spacing:3px;box-sizing:border-box}
+.auth-box input:focus{border-color:var(--brand-ink);outline:none}
+.auth-box button{width:100%;background:var(--brand-ink);color:var(--brand-yellow);padding:14px;border:none;border-radius:var(--r-md);font:800 16px var(--font-sans);cursor:pointer;transition:transform var(--dur-fast);min-height:var(--hit-min)}
+.auth-box button:active{transform:scale(.98)}
+.auth-box button:hover{background:var(--n-800)}
+.error-msg{color:var(--state-danger);font-size:13px;margin-bottom:12px;display:none;font-weight:700}
+#main-content{display:none}
+.bg-white.shadow-sm.sticky{background:#fff !important;box-shadow:0 1px 3px rgba(0,0,0,0.04) !important;border-bottom:1px solid var(--divider)}
+button[id^="tab-btn-"]{padding:10px 16px !important;background:var(--n-200) !important;color:var(--fg-2) !important;font:800 13px/1 var(--font-sans) !important;border:none !important;border-radius:var(--r-md) !important;display:inline-flex !important;align-items:center;gap:6px !important;cursor:pointer;transition:all var(--dur-fast);min-height:var(--hit-min);box-shadow:none !important;transform:none !important}
+button[id^="tab-btn-"]:hover{background:var(--n-300) !important;transform:none !important}
+button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var(--brand-yellow) !important;box-shadow:0 2px 8px rgba(0,0,0,0.15) !important}
+.tab-wrapper{padding:32px 16px 60px;display:flex;justify-content:center}
+.form-container{background:var(--surface);padding:28px;border-radius:var(--r-xl);box-shadow:var(--shadow-2xl);width:100%;max-width:560px}
+.form-container h2{text-align:center;margin:0 0 24px;font:800 20px/1.2 var(--font-sans);letter-spacing:-.02em;color:var(--fg-1)}
+.form-group{margin-bottom:18px;width:100%}
+.form-group label{display:block;margin-bottom:6px;font:700 13px/1.3 var(--font-sans);color:var(--fg-2)}
+.form-container input[type="text"],.form-container input[type="date"],.form-container select,.form-container textarea{width:100%;padding:12px 14px;border:1px solid var(--divider-strong);border-radius:var(--r-sm);box-sizing:border-box;font:400 15px/1.4 var(--font-sans);font-family:inherit;background:#fff;transition:border var(--dur-fast),box-shadow var(--dur-fast)}
+.form-container input:focus,.form-container select:focus,.form-container textarea:focus{border-color:var(--brand-ink);outline:none;box-shadow:0 0 0 3px var(--state-focus-ring)}
+.form-container textarea{resize:vertical;line-height:1.6}
+#rawMessage{height:120px;background:var(--n-50);border:2px dashed var(--n-300)}
+#result{height:280px;background:#fff;font-size:14px}
+.action-btn{width:100%;padding:14px;color:#fff;border:none;border-radius:var(--r-md);font:800 15px/1 var(--font-sans);font-family:inherit;cursor:pointer;transition:all var(--dur-fast);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--hit-min)}
+.action-btn:active{transform:scale(.97)}
+.btn-parse{background-color:var(--brand-ink) !important;color:var(--brand-yellow) !important}
+.btn-parse:hover{background-color:var(--n-800) !important}
+.btn-generate{background-color:var(--brand-ink) !important;color:var(--brand-yellow) !important}
+.btn-generate:hover{background-color:var(--n-800) !important}
+.btn-copy{background-color:var(--brand-yellow) !important;color:var(--brand-black) !important;margin-bottom:0}
+.btn-copy:hover{background-color:var(--brand-yellow-warm) !important}
+.form-container hr{border:0;border-top:1px solid var(--divider);margin:24px 0}
+.highlight-flash{background-color:var(--state-warn-bg) !important}
+.card-wrapper{display:flex;flex-direction:column;align-items:center;padding:32px 16px 60px}
+.admin-panel{background:#fff;width:100%;max-width:440px;padding:20px;border-radius:var(--r-xl);box-shadow:var(--shadow-lg);margin-bottom:20px;box-sizing:border-box}
+.admin-panel h3{margin:0 0 16px;font:700 15px/1.2 var(--font-sans);border-left:4px solid var(--brand-yellow);padding-left:10px;color:var(--fg-2)}
+.row-inputs{display:flex;gap:10px;margin-bottom:10px}
+.admin-panel select,.admin-panel input[type="text"]{flex:1;padding:12px 14px;font:500 14px var(--font-sans);font-family:inherit;border:1px solid var(--divider-strong);border-radius:var(--r-md);background:var(--n-50);box-sizing:border-box;width:100%;margin-bottom:10px;color:var(--fg-1)}
+.file-upload-wrapper{position:relative;width:100%;margin-bottom:8px}
+.file-upload-btn{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;padding:12px;background:var(--n-100);color:var(--fg-2);text-align:center;border-radius:var(--r-md);font:700 13px var(--font-sans);border:1px solid var(--divider-strong);cursor:pointer;min-height:var(--hit-min)}
+.file-upload-btn:hover{background:var(--n-150)}
+.file-upload-wrapper input[type="file"]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.logo-btn{background-color:var(--brand-yellow-soft) !important;border-color:var(--brand-yellow) !important;color:var(--brand-yellow-deep) !important}
+.btn-save{width:100%;padding:14px;background-color:var(--brand-ink) !important;color:var(--brand-yellow) !important;border:none;border-radius:var(--r-md);font:800 16px var(--font-sans);font-family:inherit;cursor:pointer;margin-top:10px;min-height:var(--hit-min);transition:transform var(--dur-fast)}
+.btn-save:active{transform:scale(.97)}
+.btn-save:hover{background-color:var(--n-800) !important}
+.guide-text{font-size:12px;color:var(--fg-4);margin-top:10px;text-align:center}
+.mobile-card{background:#fff;width:100%;max-width:400px;overflow:hidden;position:relative;border:1px solid var(--divider);box-sizing:border-box;box-shadow:var(--shadow-md)}
+.card-header{padding:16px 20px;text-align:center;border-bottom:1px solid var(--n-100);min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.card-header img.logo,.card-header .logo{max-height:40px;width:auto;margin-bottom:8px;color:var(--brand-ink)}
+.card-header .branch{font:500 12px/1.5 var(--font-sans);color:var(--fg-3)}
+.card-header .branch strong{color:var(--fg-1);font-weight:700}
+.hero{position:relative;width:100%;height:230px;background:#222;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero .placeholder{position:absolute;color:var(--fg-4);font:500 14px var(--font-sans);z-index:1;text-align:center}
+.hero img.car-photo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:2;display:none}
+.hero-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);padding:18px 20px;color:#fff;z-index:3;text-align:left}
+.hero-overlay h2{margin:0;font:800 26px/1 var(--font-brand);letter-spacing:.5px;font-style:normal}
+.hero-overlay p{margin:4px 0 0;font:700 14px/1 var(--font-sans);color:var(--brand-yellow);letter-spacing:.3px}
+.card-content{padding:22px 20px}
+.editable{border:1px dashed transparent;transition:all var(--dur-fast);cursor:text;border-radius:4px;padding:4px}
+.editable:hover,.editable:focus{outline:none;border-color:var(--brand-yellow);background:#FFFDF0}
+.message{font:400 14px/1.65 var(--font-sans);color:var(--fg-2);margin-bottom:20px;word-break:keep-all}
+.contact-area{text-align:center;padding-top:15px;border-top:1px solid var(--divider)}
+.rep-info{font:700 15px/1.3 var(--font-sans);color:var(--fg-1);margin-bottom:4px}
+.rep-phone{font:800 22px/1.2 var(--font-brand) !important;color:var(--brand-ink) !important;letter-spacing:.3px !important;font-variant-numeric:tabular-nums}
+.doc-wrapper{display:flex;flex-direction:column;align-items:center;padding:32px 16px 60px;box-sizing:border-box}
+.doc-controls{width:100%;max-width:800px;background:#fff;padding:14px 18px;margin-bottom:20px;border-radius:var(--r-md);box-shadow:var(--shadow-md);display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;flex-wrap:wrap;gap:10px}
+.btn-bold{background:var(--n-100) !important;color:var(--fg-1) !important;border:1px solid var(--divider-strong) !important;padding:10px 16px;border-radius:var(--r-md);cursor:pointer;font:700 14px var(--font-sans);font-family:inherit;min-height:var(--hit-min);transition:background var(--dur-fast)}
+.btn-bold:hover{background:var(--n-150) !important}
+.btn-download-doc{background:var(--brand-ink) !important;color:var(--brand-yellow) !important;border:none;padding:10px 20px;border-radius:var(--r-md);cursor:pointer;font:800 14px var(--font-sans);font-family:inherit;min-height:var(--hit-min);transition:background var(--dur-fast)}
+.btn-download-doc:hover{background:var(--n-800) !important}
+.doc-rep-select{padding:10px 14px;border:1px solid var(--divider-strong);border-radius:var(--r-md);font:700 14px var(--font-sans);font-family:inherit;background:var(--n-50);color:var(--fg-1);min-height:var(--hit-min)}
+#document-paper{width:800px;min-height:1131px;background:#fff;padding:65px 60px;box-sizing:border-box;box-shadow:var(--shadow-3xl);position:relative;color:#000;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--font-serif)}
+.info-table{width:100%;border-collapse:collapse;margin-bottom:25px;font-family:var(--font-sans)}
+.info-table td{padding:8px 0;font-size:13pt;vertical-align:top;line-height:1.4}
+.info-label{width:90px;font-weight:700;letter-spacing:var(--tracking-label);color:#222}
+.doc-target-input{border:1px dashed transparent;width:100%;transition:all var(--dur-fast);padding:2px 4px}
+.doc-target-input:hover,.doc-target-input:focus{background:#fdfdfd;border-color:#ccc;outline:none}
+.divider-thick{border-top:2px solid #000;margin:10px 0 35px}
+.doc-content-area{flex-grow:1;font-family:var(--font-serif);font-size:12.5pt;line-height:var(--lh-doc);white-space:pre-wrap;outline:none;word-break:keep-all;border:1px dashed transparent;padding:6px;transition:all var(--dur-fast)}
+.doc-content-area:hover,.doc-content-area:focus{border-color:#ddd;background:var(--n-50)}
+.sender-section{text-align:center;margin-top:40px;margin-bottom:50px;font-family:var(--font-sans)}
+.sender-name{font-size:20pt;font-weight:700;line-height:1.5;outline:none;display:inline-block;border:1px dashed transparent;padding:5px 15px;transition:all var(--dur-fast)}
+.sender-name:hover,.sender-name:focus{border-color:#ccc;background:var(--n-50)}
+.footer-divider{border-top:1px solid #aaa;margin-bottom:12px}
+.footer-info{font:400 9.5pt/1.6 var(--font-sans);color:#555;outline:none;border:1px dashed transparent;padding:2px;text-align:center;transition:all var(--dur-fast)}
+.footer-info:hover,.footer-info:focus{border-color:#ddd;background:var(--n-50)}
+.calc-wrapper{display:flex;flex-direction:column;align-items:center;padding:32px 16px 60px;box-sizing:border-box}
+.calc-panel{background:#fff;width:100%;max-width:820px;padding:24px;border-radius:var(--r-2xl);box-shadow:var(--shadow-xl);box-sizing:border-box;margin-bottom:20px}
+.calc-panel h2{margin:0 0 6px;font:800 20px/1.2 var(--font-sans);color:var(--fg-1);letter-spacing:-.02em}
+.calc-panel .calc-desc{margin:0 0 22px;font:500 12px var(--font-sans);color:var(--fg-4)}
+.calc-fields{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.calc-field{display:flex;flex-direction:column}
+.calc-field label{font:700 12px var(--font-sans);color:var(--fg-2);margin-bottom:6px}
+.calc-field input,.calc-field select{width:100%;padding:12px 14px;border:1px solid var(--divider-strong);border-radius:var(--r-md);font:700 15px var(--font-brand);font-family:var(--font-brand);background:var(--n-25);box-sizing:border-box;color:var(--fg-1);font-variant-numeric:tabular-nums}
+.calc-field input:focus,.calc-field select:focus{outline:none;border-color:var(--brand-ink);background:#fff;box-shadow:0 0 0 3px var(--state-focus-ring)}
+.calc-field .calc-unit{font:500 11px var(--font-sans);color:var(--fg-4);margin-top:4px}
+.calc-field-full{grid-column:1/-1}
+.calc-method{display:flex;gap:8px;margin-top:20px}
+.calc-method-btn{flex:1;padding:13px 8px;border:2px solid var(--divider-strong);background:var(--n-50);border-radius:var(--r-lg);font:700 13px var(--font-sans);color:var(--fg-3);cursor:pointer;transition:all var(--dur-fast);font-family:inherit}
+.calc-method-btn:hover{border-color:var(--n-400)}
+.calc-method-btn.active{background:var(--brand-ink);border-color:var(--brand-ink);color:var(--brand-yellow)}
+.calc-method-btn small{display:block;font-size:10px;font-weight:500;margin-top:3px;opacity:.8}
+.calc-result{background:#fff;width:100%;max-width:820px;padding:24px;border-radius:var(--r-2xl);box-shadow:var(--shadow-xl);box-sizing:border-box;margin-bottom:20px}
+.calc-empty{text-align:center;color:var(--fg-4);font-size:14px;padding:30px 0;margin:0}
+.calc-hero{background:var(--brand-ink) !important;color:#fff;border-radius:var(--r-xl);padding:28px 24px;text-align:left;margin-bottom:20px}
+.calc-hero-label{font:600 12px/1 var(--font-sans);color:var(--n-400);letter-spacing:.04em;margin-bottom:10px}
+.calc-big{font:800 44px/1.05 var(--font-brand);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;word-break:keep-all}
+.calc-big span{font-size:16px;font-weight:600;margin-left:6px;opacity:.85;color:var(--brand-yellow);letter-spacing:0}
+.calc-hero-sub{font:500 12px/1.4 var(--font-sans);color:var(--n-400);margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.12)}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.calc-cell{background:var(--n-50);border:1px solid var(--n-200);border-radius:var(--r-lg);padding:14px 12px;text-align:left}
+.calc-cell-label{font:600 10px/1.2 var(--font-sans);color:var(--fg-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.calc-cell-value{font:800 15px/1 var(--font-brand);color:var(--fg-1);font-variant-numeric:tabular-nums;word-break:break-all}
+.calc-cell-sub{font:500 10px/1.3 var(--font-sans);color:var(--fg-4);margin-top:4px}
+.calc-section-title{font:800 13px var(--font-sans);color:var(--fg-2);margin:24px 0 12px;border-left:4px solid var(--brand-yellow);padding-left:9px}
+.calc-chart-box{height:260px;width:100%}
+.calc-toggle-btn{width:100%;padding:12px;background:var(--n-100);border:1px solid var(--divider-strong);border-radius:var(--r-md);font:700 13px var(--font-sans);color:var(--fg-2);cursor:pointer;font-family:inherit}
+.calc-toggle-btn:hover{background:var(--n-150)}
+#calcScheduleScroll{max-height:260px;overflow-y:auto;margin-top:10px;border:1px solid var(--divider);border-radius:var(--r-md);transition:max-height var(--dur-slow)}
+#calcScheduleScroll.expanded{max-height:1200px}
+.calc-table{width:100%;border-collapse:collapse;font:500 12px var(--font-brand);font-variant-numeric:tabular-nums}
+.calc-table thead th{position:sticky;top:0;background:var(--brand-ink);color:#fff;padding:10px 8px;font-weight:700;font-size:11px;white-space:nowrap}
+.calc-table td{padding:8px 8px;text-align:right;border-bottom:1px solid var(--n-100)}
+.calc-table td.col-no{text-align:center;color:var(--fg-3);font-weight:700}
+.calc-table td.col-pay{font-weight:800;color:var(--fg-1)}
+.calc-table td.col-int{color:var(--state-danger)}
+.calc-table tbody tr:nth-child(even){background:var(--n-25)}
+.calc-table tr.calc-total-row td{background:var(--brand-yellow-soft);font-weight:800;color:var(--fg-1);border-top:2px solid var(--brand-yellow)}
+.calc-actions{display:flex;gap:10px;width:100%;max-width:820px;align-items:stretch;flex-wrap:wrap}
+.calc-actions .doc-rep-select{flex:1;min-width:200px}
+.calc-actions button{padding:14px 18px !important;border:none;border-radius:var(--r-md) !important;font:800 14px var(--font-sans) !important;font-family:inherit;cursor:pointer;min-height:var(--hit-min);flex:1;min-width:180px;transition:all var(--dur-fast)}
+.calc-actions button:active{transform:scale(.97)}
+#calcCopyBtn{background-color:var(--brand-yellow) !important;color:var(--brand-black) !important}
+#calcCopyBtn:hover{background-color:var(--brand-yellow-warm) !important}
+#calcSaveImgBtn{background-color:var(--brand-ink) !important;color:var(--brand-yellow) !important}
+#calcSaveImgBtn:hover{background-color:var(--n-800) !important}
+.calc-notice{font:500 12px/1.5 var(--font-sans);color:var(--fg-4);margin-top:16px;max-width:820px;width:100%;box-sizing:border-box}
+.calc-notice strong{color:var(--fg-2)}
+@media (max-width:640px){#document-paper{width:100%;padding:40px 24px}.calc-fields{grid-template-columns:1fr;gap:12px}.calc-grid{grid-template-columns:repeat(2,1fr)}.calc-big{font-size:32px}.calc-method{flex-direction:column}.calc-actions{flex-direction:column}}
+</style>
 </head>
 <body>
 
@@ -324,7 +523,7 @@
 
             <div class="mobile-card" id="cardArea">
                 <div class="card-header">
-                    <img id="mainLogo" src="logo.png" alt="Renault" class="logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
+                    <span id="mainLogo" class="logo" style="display:inline-flex;align-items:center;justify-content:center;height:40px;margin-bottom:8px;color:var(--brand-ink)"><svg viewBox="0 0 300 480" fill="currentColor" fill-rule="evenodd" style="height:100%;width:auto;display:block" aria-label="Renault"><path d="M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z"/></svg></span>
                     <div class="branch"><strong>르노코리아</strong></div>
                 </div>
                 <div class="hero">
@@ -369,13 +568,13 @@
                     <div class="file-upload-btn">📷 출고 차량 이미지 등록</div>
                     <input type="file" accept="image/*" id="delivCarInput">
                 </div>
-                <button class="btn-save" id="saveDelivBtn" style="background-color: #2c3e50;">📸 출고 축하 이미지 저장</button>
+                <button class="btn-save" id="saveDelivBtn" style="background-color:#000;color:#EFDF00;">📸 출고 축하 이미지 저장</button>
                 <button class="action-btn btn-copy mt-2" id="copyDelivBtn" style="margin-top: 8px;">📋 텍스트만 텍스트로 복사</button>
             </div>
 
             <div class="mobile-card" id="delivCardArea">
                 <div class="card-header">
-                    <img id="delivMainLogo" src="logo.png" alt="Renault" class="logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
+                    <span id="delivMainLogo" class="logo" style="display:inline-flex;align-items:center;justify-content:center;height:40px;margin-bottom:8px;color:var(--brand-ink)"><svg viewBox="0 0 300 480" fill="currentColor" fill-rule="evenodd" style="height:100%;width:auto;display:block" aria-label="Renault"><path d="M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z"/></svg></span>
                     <div class="branch"><strong>르노코리아</strong></div>
                 </div>
                 <div class="hero">
@@ -413,7 +612,7 @@
             <div id="document-paper">
                 <div>
                     <div class="doc-header" style="display: flex; justify-content: flex-start; margin-bottom: 45px; border-bottom: 2px solid #333; padding-bottom: 15px;">
-                        <img id="docMainLogo" src="logo2.png" alt="Renault Korea Logo" style="height: 75px; width: auto; display: block;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Renault_2021_Logo.svg/2560px-Renault_2021_Logo.svg.png'">
+                        <span id="docMainLogo" style="display:inline-flex;align-items:center;justify-content:center;height:70px;color:var(--brand-ink)"><svg viewBox="0 0 300 480" fill="currentColor" fill-rule="evenodd" style="height:100%;width:auto;display:block" aria-label="Renault"><path d="M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z"/></svg></span>
                     </div>
 
                     <table class="info-table">
@@ -540,8 +739,8 @@
                     <option value="kang">강명수 소장</option>
                     <option value="kwon">권성호 파트장</option>
                 </select>
-                <button type="button" id="calcCopyBtn" style="background-color:#27ae60;">📋 견적 문구 복사</button>
-                <button type="button" id="calcSaveImgBtn" style="background-color:#2c3e50;">📸 견적 이미지 저장</button>
+                <button type="button" id="calcCopyBtn" style="background-color:#EFDF00;color:#000;">📋 견적 문구 복사</button>
+                <button type="button" id="calcSaveImgBtn" style="background-color:#000;color:#EFDF00;">📸 견적 이미지 저장</button>
             </div>
 
             <p class="calc-notice">※ 본 계산 결과는 <strong>엑셀 원본 수식(원리금 균등 PMT · 원금 균등)</strong>을 그대로 적용한 참고용 예상 금액입니다. 실제 승인 금리, 취득·등록세, 보험료, 캐피탈사 수수료에 따라 최종 금액은 달라질 수 있습니다.</p>
@@ -705,8 +904,8 @@
         copyBtn.addEventListener('click', () => {
             if(!resultArea.value) return alert("복사할 내용이 없습니다.");
             resultArea.select(); document.execCommand('copy');
-            const origin = copyBtn.innerText; copyBtn.innerText = "✅ 복사되었습니다!"; copyBtn.style.backgroundColor = "#219150";
-            setTimeout(() => { copyBtn.innerText = origin; copyBtn.style.backgroundColor = "#27ae60"; }, 1500);
+            const origin = copyBtn.innerText; copyBtn.innerText = "✅ 복사되었습니다!"; copyBtn.style.backgroundColor = "#C7BA00";
+            setTimeout(() => { copyBtn.innerText = origin; copyBtn.style.backgroundColor = "#EFDF00"; }, 1500);
             window.getSelection().removeAllRanges();
         });
 
@@ -731,7 +930,7 @@
                 르노코리아 ${branchName} ${selectedRep.name} ${selectedRep.title}입니다.<br><br>
                 바쁜 일정 중에도 귀한 시간을 내어 <strong>${cars[carKey].korName}</strong> 시승을 함께해 주셔서 진심으로 감사드립니다.<br><br>
                 어제 함께한 드라이빙이 기분 좋은 여운으로 남으셨기를 바랍니다. 대화를 나누며 가족을 위해 신중하게 차를 고르시는 따뜻한 마음을 깊이 느낄 수 있었습니다.<br><br>
-                <div style="display: block; text-align: center; font-size: 0.95rem; font-weight: 700; color: #d32f2f; background: #fdf2f2; padding: 22px 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #f9e1e1; word-break: keep-all; line-height: 1.6; box-sizing: border-box;">
+                <div style="display: block; text-align: center; font-size: 0.95rem; font-weight: 700; color: #000; background: #FFFCD9; padding: 22px 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #EFDF00; word-break: keep-all; line-height: 1.6; box-sizing: border-box;">
                     "단순히 차를 판매하는 것이 아니라,<br>고객님의 일상에 가장 잘 맞는 든든한 동반자를 찾아드리겠습니다."
                 </div>
                 차량은 일상의 중요한 공간인 만큼 천천히 고민해 보시고, 궁금하신 점이나 혜택 안내가 필요하실 땐 언제든 편하게 연락 주십시오. 정직하고 든든한 길잡이가 되어드리겠습니다.<br><br>
@@ -788,7 +987,7 @@
                 르노코리아 ${branchName} ${selectedRep.name} ${selectedRep.title}입니다.<br><br>
                 오랜 시간 설레는 마음으로 기다려주신 소중한 차량 <strong>${cars[carKey].korName}</strong>의 인도를 무사히 마치게 되어 기쁩니다. 새 차와 함께한 첫 주행은 편안하셨는지요?<br><br>
                 저를 믿고 소중한 인연을 맺어주셔서 진심으로 감사드립니다. 고객님과 가족분들의 안전하고 행복한 여정을 이끌어주는 든든한 동반자가 되기를 진심으로 바랍니다.<br><br>
-                <div style="display: block; text-align: center; font-size: 0.95rem; font-weight: 700; color: #2c3e50; background: #f8f9fa; padding: 20px 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #e9ecef; word-break: keep-all; line-height: 1.6; box-sizing: border-box;">
+                <div style="display: block; text-align: center; font-size: 0.95rem; font-weight: 700; color: #000; background: #F7F7F5; padding: 20px 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #D9D9D6; word-break: keep-all; line-height: 1.6; box-sizing: border-box;">
                     "차량 인도는 끝이 아닌 새로운 시작입니다.<br>언제나 고객님의 곁에서 든든한 파트너가 되겠습니다."
                 </div>
                 운행하시면서 차량 기능이나 사후 관리에 대해 궁금하신 점이 생기면 언제든 편하게 연락 주십시오. 늘 한결같은 마음으로 꼼꼼히 챙기겠습니다.<br><br>
@@ -841,8 +1040,8 @@
             const btn = document.getElementById("copyDelivBtn");
             const origin = btn.innerText; 
             btn.innerText = "✅ 문자 내용이 복사되었습니다!"; 
-            btn.style.backgroundColor = "#219150";
-            setTimeout(() => { btn.innerText = origin; btn.style.backgroundColor = "#27ae60"; }, 1500);
+            btn.style.backgroundColor = "#C7BA00";
+            setTimeout(() => { btn.innerText = origin; btn.style.backgroundColor = "#EFDF00"; }, 1500);
             window.getSelection().removeAllRanges();
         });
 
@@ -1180,8 +1379,8 @@
           data: {
             labels: labels,
             datasets: [
-              { label: '납입원금', data: principalData, backgroundColor: '#2c3e50' },
-              { label: '이자', data: interestData, backgroundColor: '#f1c40f' }
+              { label: '납입원금', data: principalData, backgroundColor: '#000000' },
+              { label: '이자', data: interestData, backgroundColor: '#EFDF00' }
             ]
           },
           options: {
@@ -1247,10 +1446,10 @@
         var btn = el('calcCopyBtn');
         var origin = btn.innerText;
         btn.innerText = '✅ 견적 문구가 복사되었습니다!';
-        btn.style.backgroundColor = '#219150';
+        btn.style.backgroundColor = '#C7BA00';
         setTimeout(function () {
           btn.innerText = origin;
-          btn.style.backgroundColor = '#27ae60';
+          btn.style.backgroundColor = '#EFDF00';
         }, 1600);
       }
 
@@ -1346,5 +1545,6 @@
       window.renderLoanCalc = function () { render('external'); };
     })();
     </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
