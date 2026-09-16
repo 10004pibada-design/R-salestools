@@ -865,6 +865,486 @@
         updateDocSender();
         lucide.createIcons();
     </script>
-    <script src="js/loan.js"></script>
+    <script>
+    /* =========================================================
+     * 르노코리아 영업 툴 - 할부 계산기 (탭 5)
+     * 업로드된 "할부 계산기 수식.xlsx" 의 수식을 그대로 구현
+     *
+     * [엑셀 원본 수식]
+     *  입력  : C2 차량 총 가격 / C3 선수금 / C4 할부 원금 / C5 할부 개월 수 / C6 연 이자율
+     *  원리금 균등 : 월납입금 = PMT(C6/12, C5, -C4)
+     *                납입원금 = PPMT(C6/12, k, C5, -C4)
+     *                이자     = 월납입금 - 납입원금
+     *                잔금     = C4 * ((1+i)^n - (1+i)^k) / ((1+i)^n - 1)
+     *  원금 균등   : 납입원금 = C4 / C5
+     *                이자     = (C4 - 납입원금*(k-1)) * i
+     *                월납입금 = 납입원금 + 이자
+     *                잔금     = C4 - 납입원금*k
+     * ========================================================= */
+    (function () {
+      'use strict';
+
+      // ---------- 유틸 ----------
+      var won = function (n) {
+        if (!isFinite(n)) return '0';
+        return Math.round(n).toLocaleString('ko-KR');
+      };
+
+      var toNumber = function (str) {
+        if (str === null || str === undefined) return 0;
+        var v = String(str).replace(/[^0-9.\-]/g, '');
+        var n = parseFloat(v);
+        return isNaN(n) ? 0 : n;
+      };
+
+      // 만원 단위 읽기 쉬운 표기 (예: 4,200만원)
+      var manwon = function (n) {
+        var m = Math.round(n / 10000);
+        return m.toLocaleString('ko-KR') + '만원';
+      };
+
+      // ---------- 핵심 계산 ----------
+      /**
+       * 원리금 균등 상환 (엑셀 PMT / PPMT 동일)
+       * @param {number} P 할부 원금
+       * @param {number} n 개월 수
+       * @param {number} annual 연 이자율 (소수, 예 0.037)
+       */
+      function calcEqualPayment(P, n, annual) {
+        var i = annual / 12;
+        var rows = [];
+        var payment;
+
+        if (i === 0) {
+          payment = P / n;
+        } else {
+          payment = (P * i) / (1 - Math.pow(1 + i, -n));
+        }
+
+        var pow_n = Math.pow(1 + i, n);
+        var totalInterest = 0;
+        var totalPrincipal = 0;
+        var prevBalance = P;
+
+        for (var k = 1; k <= n; k++) {
+          // 엑셀 잔금 수식과 동일
+          var balance = (i === 0)
+            ? P - (P / n) * k
+            : P * (pow_n - Math.pow(1 + i, k)) / (pow_n - 1);
+
+          var interest = (i === 0) ? 0 : prevBalance * i;
+          var principal = payment - interest;
+
+          totalInterest += interest;
+          totalPrincipal += principal;
+          prevBalance = balance;
+
+          rows.push({
+            no: k,
+            payment: payment,
+            principal: principal,
+            interest: interest,
+            balance: balance < 0.5 ? 0 : balance
+          });
+        }
+
+        return {
+          type: 'equalPayment',
+          monthly: payment,
+          firstPayment: payment,
+          lastPayment: payment,
+          totalPrincipal: totalPrincipal,
+          totalInterest: totalInterest,
+          totalPay: totalPrincipal + totalInterest,
+          rows: rows
+        };
+      }
+
+      /**
+       * 원금 균등 상환
+       */
+      function calcEqualPrincipal(P, n, annual) {
+        var i = annual / 12;
+        var principal = P / n;
+        var rows = [];
+        var totalInterest = 0;
+
+        for (var k = 1; k <= n; k++) {
+          var interest = (P - principal * (k - 1)) * i;
+          var payment = principal + interest;
+          var balance = P - principal * k;
+          totalInterest += interest;
+
+          rows.push({
+            no: k,
+            payment: payment,
+            principal: principal,
+            interest: interest,
+            balance: balance < 0.5 ? 0 : balance
+          });
+        }
+
+        return {
+          type: 'equalPrincipal',
+          monthly: rows[0].payment,
+          firstPayment: rows[0].payment,
+          lastPayment: rows[n - 1].payment,
+          totalPrincipal: P,
+          totalInterest: totalInterest,
+          totalPay: P + totalInterest,
+          rows: rows
+        };
+      }
+
+      // ---------- DOM ----------
+      var el = function (id) { return document.getElementById(id); };
+
+      var priceInput, downInput, downRateInput, principalInput,
+          monthsSelect, monthsCustom, rateInput, methodBtns,
+          scheduleBody, scheduleWrap, summaryBox, chartCanvas;
+
+      var currentMethod = 'equalPayment';
+      var lastResult = null;
+      var lastInputs = null;
+      var loanChart = null;
+
+      // 사용자가 할부 원금을 직접 수정했는지 여부.
+      // true 면 차량가-선수금으로 덮어쓰지 않는다. (상환방식 버튼 클릭 시 입력값 유실 방지)
+      var principalManual = false;
+
+      /* downRateManual : 선수금 비율(%)이 입력되어 있는가?
+       *   true  → 선수금 = 차량가 × 비율 (자동 반영)
+       *   false → 선수금은 사용자가 직접 입력한 값을 그대로 사용(수동) */
+      var downRateManual = false;
+
+      // 마지막으로 유효했던 개월 수 ('직접 입력' 전환 직후 결과가 사라지지 않도록 유지)
+      var lastValidMonths = 60;
+
+      // 입력값 수집 + 할부원금 자동 동기화
+      function readInputs(source) {
+        var price = toNumber(priceInput.value);
+        var down = toNumber(downInput.value);
+
+        // --- 입력 모드 갱신 ---
+        if (source === 'downRate') {
+          // 비율 칸을 비우면 수동(선수금 직접 입력) 모드로 복귀
+          downRateManual = (downRateInput.value.trim() !== '');
+        } else if (source === 'down') {
+          // 선수금을 직접 건드리면 비율 칸을 비우고 수동 모드로 전환
+          downRateManual = false;
+          downRateInput.value = '';
+        }
+
+        if (source === 'price' || source === 'down' || source === 'downRate') {
+          // 차량가/선수금/비율을 건드리면 할부 원금은 다시 자동 계산 모드로 복귀
+          principalManual = false;
+        } else if (source === 'principal') {
+          // 칸을 완전히 비우면 다시 자동 계산으로 복귀
+          principalManual = (principalInput.value.trim() !== '');
+        }
+
+        // --- 선수금 결정 ---
+        if (downRateManual) {
+          // 비율이 입력되어 있으면 선수금은 항상 비율로부터 자동 계산
+          var rate = toNumber(downRateInput.value);
+          if (rate < 0) { rate = 0; downRateInput.value = '0'; }
+          if (rate > 100) { rate = 100; downRateInput.value = '100'; }
+          down = Math.round(price * rate / 100);
+          downInput.value = down.toLocaleString('ko-KR');
+        } else if (price > 0 && down > price) {
+          // 수동 입력 시 선수금이 차량가를 넘지 않도록 제한
+          down = price;
+          downInput.value = down.toLocaleString('ko-KR');
+        }
+
+        // --- 할부 원금 결정 ---
+        var principal;
+        if (principalManual) {
+          // 사용자가 직접 넣은 값을 그대로 존중 (버튼 클릭 등으로 재렌더되어도 유지)
+          principal = toNumber(principalInput.value);
+          // 차량가가 아직 비어 있으면, 먼저 입력된 금액으로 차량가를 역산해 채워준다
+          if (price <= 0 && principal > 0) {
+            price = principal + down;
+            priceInput.value = price.toLocaleString('ko-KR');
+          }
+        } else {
+          principal = Math.max(price - down, 0);
+          principalInput.value = principal.toLocaleString('ko-KR');
+        }
+
+        // 개월 수: '직접 입력'인데 아직 비어 있으면 직전 유효값을 사용
+        var months;
+        if (monthsSelect.value === 'custom') {
+          var typed = Math.round(toNumber(monthsCustom.value));
+          if (typed > 600) { typed = 600; monthsCustom.value = '600'; } // 과도한 입력 방지
+          months = typed > 0 ? typed : lastValidMonths;
+        } else {
+          months = parseInt(monthsSelect.value, 10);
+        }
+        if (months > 0) lastValidMonths = months;
+
+        var annual = toNumber(rateInput.value) / 100;
+
+        return { price: price, down: down, principal: principal, months: months, annual: annual };
+      }
+
+      function render(source) {
+        var input = readInputs(source);
+        lastInputs = input;
+
+        if (input.principal <= 0 || !input.months || input.months <= 0) {
+          summaryBox.innerHTML = '<p class="calc-empty">차량 총 가격(또는 할부 원금)을 입력하면 결과가 자동으로 계산됩니다.</p>';
+          scheduleBody.innerHTML = '';
+          scheduleWrap.style.display = 'none';
+          lastResult = null;
+          if (loanChart) { loanChart.destroy(); loanChart = null; }
+          return;
+        }
+
+        var res = (currentMethod === 'equalPayment')
+          ? calcEqualPayment(input.principal, input.months, input.annual)
+          : calcEqualPrincipal(input.principal, input.months, input.annual);
+
+        lastResult = res;
+        drawSummary(input, res);
+        drawSchedule(res);
+        drawChart(res);
+      }
+
+      function drawSummary(input, res) {
+        var methodName = (res.type === 'equalPayment') ? '원리금 균등' : '원금 균등';
+        var monthlyLine = (res.type === 'equalPayment')
+          ? '<div class="calc-big">' + won(res.monthly) + '<span>원 / 월</span></div>'
+          : '<div class="calc-big">' + won(res.firstPayment) + '<span>원 → ' + won(res.lastPayment) + '원</span></div>';
+
+        var html = '' +
+          '<div class="calc-hero">' +
+            '<div class="calc-hero-label">' + methodName + ' · ' + input.months + '개월 · 연 ' + (input.annual * 100).toFixed(2) + '%</div>' +
+            monthlyLine +
+            (res.type === 'equalPrincipal' ? '<div class="calc-hero-sub">1회차 → 최종회차 (매월 감소)</div>' : '<div class="calc-hero-sub">매월 동일 납입</div>') +
+          '</div>' +
+          '<div class="calc-grid">' +
+            cell('차량 총 가격', won(input.price) + '원', manwon(input.price)) +
+            cell('선수금(현금)', won(input.down) + '원', input.price > 0 ? (input.down / input.price * 100).toFixed(1) + '%' : '-') +
+            cell('할부 원금', won(input.principal) + '원', manwon(input.principal)) +
+            cell('할부 기간', input.months + '개월', (input.months / 12).toFixed(1) + '년') +
+            cell('총 이자', won(res.totalInterest) + '원', '원금의 ' + (res.totalInterest / input.principal * 100).toFixed(1) + '%') +
+            cell('총 상환액', won(res.totalPay) + '원', '원금+이자') +
+            cell('실제 총 지출', won(res.totalPay + input.down) + '원', '선수금 포함') +
+            cell('월 평균 부담', won(res.totalPay / input.months) + '원', '전체 평균') +
+          '</div>';
+
+        summaryBox.innerHTML = html;
+      }
+
+      function cell(label, value, sub) {
+        return '<div class="calc-cell"><div class="calc-cell-label">' + label + '</div>' +
+               '<div class="calc-cell-value">' + value + '</div>' +
+               '<div class="calc-cell-sub">' + sub + '</div></div>';
+      }
+
+      function drawSchedule(res) {
+        var out = [];
+        for (var idx = 0; idx < res.rows.length; idx++) {
+          var r = res.rows[idx];
+          out.push('<tr>' +
+            '<td class="col-no">' + r.no + '</td>' +
+            '<td class="col-pay">' + won(r.payment) + '</td>' +
+            '<td>' + won(r.principal) + '</td>' +
+            '<td class="col-int">' + won(r.interest) + '</td>' +
+            '<td>' + won(r.balance) + '</td>' +
+          '</tr>');
+        }
+        out.push('<tr class="calc-total-row">' +
+          '<td>합계</td>' +
+          '<td class="col-pay">' + won(res.totalPay) + '</td>' +
+          '<td>' + won(res.totalPrincipal) + '</td>' +
+          '<td class="col-int">' + won(res.totalInterest) + '</td>' +
+          '<td>0</td>' +
+        '</tr>');
+        scheduleBody.innerHTML = out.join('');
+        scheduleWrap.style.display = 'block';
+      }
+
+      function drawChart(res) {
+        if (typeof Chart === 'undefined' || !chartCanvas) return;
+        var labels = [], principalData = [], interestData = [];
+        for (var idx = 0; idx < res.rows.length; idx++) {
+          labels.push(res.rows[idx].no + '회');
+          principalData.push(Math.round(res.rows[idx].principal));
+          interestData.push(Math.round(res.rows[idx].interest));
+        }
+        if (loanChart) loanChart.destroy();
+        loanChart = new Chart(chartCanvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              { label: '납입원금', data: principalData, backgroundColor: '#2c3e50' },
+              { label: '이자', data: interestData, backgroundColor: '#f1c40f' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+              x: { stacked: true, ticks: { maxTicksLimit: 12, font: { size: 10 } }, grid: { display: false } },
+              y: {
+                stacked: true,
+                ticks: { callback: function (v) { return (v / 10000).toFixed(0) + '만'; }, font: { size: 10 } }
+              }
+            },
+            plugins: {
+              legend: { position: 'bottom' },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) { return ctx.dataset.label + ': ' + won(ctx.parsed.y) + '원'; }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // ---------- 고객 안내 문구 복사 ----------
+      function buildCustomerText() {
+        if (!lastResult || !lastInputs) return '';
+        var i = lastInputs, r = lastResult;
+        var methodName = (r.type === 'equalPayment') ? '원리금 균등 (매월 동일)' : '원금 균등 (매월 감소)';
+        var monthly = (r.type === 'equalPayment')
+          ? won(r.monthly) + '원'
+          : won(r.firstPayment) + '원 → ' + won(r.lastPayment) + '원';
+
+        var repSel = el('calcRepSelect');
+        var repText = repSel ? repSel.options[repSel.selectedIndex].text : '';
+
+        return '[르노코리아] 할부 견적 안내\n\n' +
+          '■ 차량 총 가격 : ' + won(i.price) + '원\n' +
+          '■ 선수금(현금) : ' + won(i.down) + '원\n' +
+          '■ 할부 원금 : ' + won(i.principal) + '원\n' +
+          '■ 할부 조건 : ' + i.months + '개월 / 연 ' + (i.annual * 100).toFixed(2) + '%\n' +
+          '■ 상환 방식 : ' + methodName + '\n\n' +
+          '▶ 월 납입금 : ' + monthly + '\n' +
+          '▶ 총 이자 : ' + won(r.totalInterest) + '원\n' +
+          '▶ 총 상환액 : ' + won(r.totalPay) + '원\n' +
+          '▶ 선수금 포함 총 지출 : ' + won(r.totalPay + i.down) + '원\n\n' +
+          '※ 위 금액은 참고용 예상 금액이며, 실제 승인 금리 및 취득/등록비용, 보험료에 따라 달라질 수 있습니다.\n\n' +
+          '르노코리아 연제/금정대리점 ' + repText;
+      }
+
+      function copyCustomerText() {
+        var text = buildCustomerText();
+        if (!text) { alert('먼저 할부 조건을 입력해주세요.'); return; }
+        var ta = el('calcHiddenText');
+        ta.value = text;
+        ta.style.display = 'block';
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        ta.style.display = 'none';
+        window.getSelection().removeAllRanges();
+
+        var btn = el('calcCopyBtn');
+        var origin = btn.innerText;
+        btn.innerText = '✅ 견적 문구가 복사되었습니다!';
+        btn.style.backgroundColor = '#219150';
+        setTimeout(function () {
+          btn.innerText = origin;
+          btn.style.backgroundColor = '#27ae60';
+        }, 1600);
+      }
+
+      // ---------- 초기화 ----------
+      function init() {
+        priceInput = el('calcPrice');
+        downInput = el('calcDown');
+        downRateInput = el('calcDownRate');
+        principalInput = el('calcPrincipal');
+        monthsSelect = el('calcMonths');
+        monthsCustom = el('calcMonthsCustom');
+        rateInput = el('calcRate');
+        scheduleBody = el('calcScheduleBody');
+        scheduleWrap = el('calcScheduleWrap');
+        summaryBox = el('calcSummary');
+        chartCanvas = el('calcChart');
+        methodBtns = document.querySelectorAll('.calc-method-btn');
+
+        if (!priceInput) return;
+
+        // 숫자 천단위 콤마 자동
+        [priceInput, downInput, principalInput].forEach(function (input) {
+          input.addEventListener('input', function () {
+            var caretEnd = this.selectionStart === this.value.length;
+            var n = toNumber(this.value);
+            this.value = n ? n.toLocaleString('ko-KR') : '';
+            if (caretEnd) { this.selectionStart = this.selectionEnd = this.value.length; }
+            render(this === priceInput ? 'price' : (this === downInput ? 'down' : 'principal'));
+          });
+        });
+
+        downRateInput.addEventListener('input', function () { render('downRate'); });
+        rateInput.addEventListener('input', function () { render('rate'); });
+        monthsCustom.addEventListener('input', function () { render('months'); });
+
+        monthsSelect.addEventListener('change', function () {
+          var isCustom = (this.value === 'custom');
+          monthsCustom.style.display = isCustom ? 'block' : 'none';
+          // '직접 입력' 전환 시 직전 개월 수를 채워 결과가 빈 화면이 되지 않게 한다
+          if (isCustom && !monthsCustom.value) { monthsCustom.value = lastValidMonths; }
+          if (isCustom) { monthsCustom.focus(); }
+          render('months');
+        });
+
+        // 상환 방식 토글
+        for (var m = 0; m < methodBtns.length; m++) {
+          methodBtns[m].addEventListener('click', function () {
+            currentMethod = this.getAttribute('data-method');
+            for (var k = 0; k < methodBtns.length; k++) {
+              methodBtns[k].classList.toggle('active', methodBtns[k] === this);
+            }
+            render('method');
+          });
+        }
+
+        // 상환표 펼치기/접기
+        var toggleBtn = el('calcToggleSchedule');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', function () {
+            var box = el('calcScheduleScroll');
+            var open = box.classList.toggle('expanded');
+            this.innerText = open ? '▲ 전체 상환 스케줄 접기' : '▼ 전체 상환 스케줄 펼쳐보기';
+          });
+        }
+
+        el('calcCopyBtn').addEventListener('click', copyCustomerText);
+
+        var imgBtn = el('calcSaveImgBtn');
+        if (imgBtn) {
+          imgBtn.addEventListener('click', function () {
+            var target = el('calcResultArea');
+            if (typeof html2canvas === 'undefined') return;
+            html2canvas(target, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(function (canvas) {
+              var link = document.createElement('a');
+              link.download = '르노코리아_할부견적.png';
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+            });
+          });
+        }
+
+        // 초기 상태: 차량가 0원 → 안내 문구 표시
+        render('init');
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+      // 외부(탭 전환 시)에서 차트 리사이즈용
+      window.renderLoanCalc = function () { render('external'); };
+    })();
+    </script>
 </body>
 </html>
