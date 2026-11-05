@@ -271,7 +271,7 @@ body{font-family:var(--font-sans);background:var(--n-150);margin:0;color:var(--f
 #auth-screen{position:fixed;inset:0;background:#0a0a0a;display:flex;justify-content:center;align-items:center;z-index:9999;color:#fff;padding:24px}
 #auth-screen::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(239,223,0,0.05),transparent 40%),radial-gradient(circle at 80% 70%,rgba(29,30,33,0.6),transparent 50%);pointer-events:none}
 .auth-box{position:relative;background:#fff;padding:44px 32px 32px;border-radius:var(--r-xl);text-align:center;color:var(--fg-1);box-shadow:0 20px 60px rgba(0,0,0,0.5);width:90%;max-width:400px}
-.auth-box img.brand-logo{max-height:60px;width:auto;margin:0 auto 20px;display:block}
+.auth-box::before{content:"";display:block;width:44px;height:70px;margin:0 auto 20px;background-color:var(--brand-black);-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 480' fill='black' fill-rule='evenodd'><path d='M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z'/></svg>") no-repeat center/contain;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 480' fill='black' fill-rule='evenodd'><path d='M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z'/></svg>") no-repeat center/contain}
 .auth-box h2{margin:0 0 8px;font:800 22px/1.2 var(--font-sans);letter-spacing:-.02em}
 .auth-box p{color:var(--fg-3);margin-bottom:24px;font-size:14px}
 .auth-box input{width:100%;padding:14px 16px;border:2px solid var(--divider-strong);border-radius:var(--r-md);margin-bottom:12px;font:600 15px var(--font-sans);text-align:center;letter-spacing:3px;box-sizing:border-box}
@@ -413,12 +413,12 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
 .calc-notice strong{color:var(--fg-2)}
 @media (max-width:640px){#document-paper{width:100%;padding:40px 24px}.calc-fields{grid-template-columns:1fr;gap:12px}.calc-grid{grid-template-columns:repeat(2,1fr)}.calc-big{font-size:32px}.calc-method{flex-direction:column}.calc-actions{flex-direction:column}}
 </style>
+<link rel="stylesheet" href="bnk-rent.css">
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <img class="brand-logo" src="logo.png" alt="Renault Korea">
             <h2>영업 자동화 툴</h2>
             <p>허용된 팀원만 접근 가능합니다.</p>
             <input type="password" id="pwdInput" placeholder="비밀번호를 입력하세요" onkeypress="if(event.keyCode==13) checkPwd()">
@@ -445,6 +445,12 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
                     </button>
                     <button id="tab-btn-calc" onclick="switchTab('calc')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
                         <i data-lucide="calculator" class="w-4 h-4 sm:w-5 sm:h-5"></i> 할부 계산
+                    </button>
+                    <button id="tab-btn-bnkquote" onclick="switchTab('bnkquote')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
+                        <i data-lucide="car-front" class="w-4 h-4 sm:w-5 sm:h-5"></i> BNK 렌트
+                    </button>
+                    <button id="tab-btn-bnkguide" onclick="switchTab('bnkguide')" class="px-4 sm:px-5 py-2.5 bg-gray-200 text-gray-700 font-bold rounded-lg shadow transition-all hover:bg-gray-300 cursor-pointer flex items-center gap-1.5 text-xs sm:text-base">
+                        <i data-lucide="clipboard-list" class="w-4 h-4 sm:w-5 sm:h-5"></i> BNK 진행
                     </button>
                 </div>
             </div>
@@ -524,7 +530,7 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
 
             <div class="mobile-card" id="cardArea">
                 <div class="card-header">
-                    <img id="mainLogo" src="logo.png" alt="Renault Korea" class="logo" style="max-height:45px;width:auto;margin-bottom:8px;display:block">
+                    <span id="mainLogo" class="logo" style="display:inline-flex;align-items:center;justify-content:center;height:40px;margin-bottom:8px;color:var(--brand-ink)"><svg viewBox="0 0 300 480" fill="currentColor" fill-rule="evenodd" style="height:100%;width:auto;display:block" aria-label="Renault"><path d="M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z"/></svg></span>
                     <div class="branch"><strong>르노코리아</strong></div>
                 </div>
                 <div class="hero">
@@ -575,7 +581,7 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
 
             <div class="mobile-card" id="delivCardArea">
                 <div class="card-header">
-                    <img id="delivMainLogo" src="logo.png" alt="Renault Korea" class="logo" style="max-height:45px;width:auto;margin-bottom:8px;display:block">
+                    <span id="delivMainLogo" class="logo" style="display:inline-flex;align-items:center;justify-content:center;height:40px;margin-bottom:8px;color:var(--brand-ink)"><svg viewBox="0 0 300 480" fill="currentColor" fill-rule="evenodd" style="height:100%;width:auto;display:block" aria-label="Renault"><path d="M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z"/></svg></span>
                     <div class="branch"><strong>르노코리아</strong></div>
                 </div>
                 <div class="hero">
@@ -613,7 +619,7 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
             <div id="document-paper">
                 <div>
                     <div class="doc-header" style="display: flex; justify-content: flex-start; margin-bottom: 45px; border-bottom: 2px solid #333; padding-bottom: 15px;">
-                        <img id="docMainLogo" src="logo2.png" alt="Renault Korea" style="height:60px;width:auto;display:block">
+                        <span id="docMainLogo" style="display:inline-flex;align-items:center;justify-content:center;height:70px;color:var(--brand-ink)"><svg viewBox="0 0 300 480" fill="currentColor" fill-rule="evenodd" style="height:100%;width:auto;display:block" aria-label="Renault"><path d="M 120 20 L 240 240 L 120 460 L 0 240 Z M 120 71.62 L 205.87 240 L 120 408.38 L 34.13 240 Z M 180 20 L 300 240 L 180 460 L 60 240 Z M 180 71.62 L 265.87 240 L 180 408.38 L 94.13 240 Z"/></svg></span>
                     </div>
 
                     <table class="info-table">
@@ -749,6 +755,478 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
             <textarea id="calcHiddenText" style="display:none;"></textarea>
         </section>
 
+<!-- ═══════════════════════════════════════════════════════
+     TAB 6 · BNK 렌트 예시 (PPT 1p — 비교 견적)
+     ═══════════════════════════════════════════════════════ -->
+<div id="section-bnkquote" class="bnk-wrapper hidden">
+  <div class="bnk-col">
+
+    <div class="bnk-hero" id="bnkHero">
+      <div class="bnk-hero-top">
+        <div>
+          <div class="bnk-eyebrow">BNK 특판 렌트 · 비교 견적 예시</div>
+          <h2>Grand Koleos <span>Iconic 26MY</span></h2>
+          <div class="bnk-hero-opts">
+            <span class="bnk-opt">클라우드펄</span>
+            <span class="bnk-opt">BOSE (135)</span>
+            <span class="bnk-opt">HUD (125)</span>
+            <span class="bnk-opt">20&quot; 휠 (40)</span>
+          </div>
+        </div>
+        <div class="bnk-price">
+          <span>차량가격</span>
+          <strong>47,050,000<em>원</em></strong>
+        </div>
+      </div>
+
+      <div class="bnk-kpi">
+        <div class="bnk-kpi-head">
+          <div class="bnk-kpi-label">48개월 기준 · 상품 선택</div>
+          <div class="bnk-toggle" id="bnkMethodToggle">
+            <button type="button" data-m="lease" class="on">BNK 렌터카</button>
+            <button type="button" data-m="residual">잔가보장</button>
+            <button type="button" data-m="low">저리할부</button>
+          </div>
+        </div>
+        <div class="bnk-kpi-big" id="bnkKpiBig">622,600<em>원 / 월</em></div>
+        <div class="bnk-kpi-sub" id="bnkKpiSub"></div>
+      </div>
+    </div>
+
+    <div class="bnk-panel">
+      <h3 class="bnk-panel-title">상품별 4년 총비용 비교
+        <small>같은 차량 · 같은 조건에서 세 가지 구매 방식을 나란히 비교한 예시입니다.</small>
+      </h3>
+
+      <div class="bnk-table-scroll">
+        <table class="bnk-table" id="bnkCompare">
+          <colgroup>
+            <col style="width:37%"><col style="width:21%"><col style="width:21%"><col style="width:21%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th data-col="low">저리할부</th>
+              <th data-col="residual">잔가보장</th>
+              <th data-col="lease" class="is-bnk">BNK 렌터카</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="bnk-group"><td colspan="4">초기 비용</td></tr>
+            <tr>
+              <td class="bnk-row-label">할인<small>생산월 + 노후차 + 재구매</small></td>
+              <td data-col="low">2,700,000</td>
+              <td data-col="residual">2,700,000</td>
+              <td data-col="lease" class="is-bnk">8,944,870</td>
+            </tr>
+            <tr>
+              <td class="bnk-row-label">최초비용<small>계약금 + 등록비 + 탁송료</small></td>
+              <td data-col="low">3,054,770</td>
+              <td data-col="residual">3,054,770</td>
+              <td data-col="lease" class="is-bnk muted">-</td>
+            </tr>
+            <tr>
+              <td class="bnk-row-label">보험료</td>
+              <td data-col="low">1,000,000</td>
+              <td data-col="residual">1,000,000</td>
+              <td data-col="lease" class="is-bnk muted">-</td>
+            </tr>
+            <tr class="is-total">
+              <td class="bnk-row-label">초기비용 합계</td>
+              <td data-col="low">4,054,770</td>
+              <td data-col="residual">4,054,770</td>
+              <td data-col="lease" class="is-bnk muted">-</td>
+            </tr>
+
+            <tr class="bnk-group"><td colspan="4">월 납입</td></tr>
+            <tr>
+              <td class="bnk-row-label">월불입금</td>
+              <td data-col="low">970,726</td>
+              <td data-col="residual">546,662</td>
+              <td data-col="lease" class="is-bnk">622,600</td>
+            </tr>
+            <tr>
+              <td class="bnk-row-label">48개월 납입원금</td>
+              <td data-col="low">46,594,848</td>
+              <td data-col="residual">26,239,776</td>
+              <td data-col="lease" class="is-bnk">29,884,800</td>
+            </tr>
+            <tr>
+              <td class="bnk-row-label">이자</td>
+              <td data-col="low">3,345,861</td>
+              <td data-col="residual">8,190,758</td>
+              <td data-col="lease" class="is-bnk muted">-</td>
+            </tr>
+            <tr class="is-total">
+              <td class="bnk-row-label">48개월 납입 총액</td>
+              <td data-col="low">49,940,709</td>
+              <td data-col="residual">34,430,534</td>
+              <td data-col="lease" class="is-bnk">29,884,800</td>
+            </tr>
+
+            <tr class="bnk-group"><td colspan="4">4년 운행 비용</td></tr>
+            <tr>
+              <td class="bnk-row-label">4년간 추가비용<small>보험료 + 자동차세</small></td>
+              <td data-col="low">4,120,000</td>
+              <td data-col="residual">4,120,000</td>
+              <td data-col="lease" class="is-bnk muted">-</td>
+            </tr>
+            <tr class="is-focus">
+              <td class="bnk-row-label">4년간 총 소요비용</td>
+              <td data-col="low">58,115,479</td>
+              <td data-col="residual">42,605,304</td>
+              <td data-col="lease" class="is-bnk">29,884,800<span class="bnk-lowest">최저</span></td>
+            </tr>
+
+            <tr class="bnk-group"><td colspan="4">만기 처리</td></tr>
+            <tr>
+              <td class="bnk-row-label">인수시 비용</td>
+              <td data-col="low" class="muted" style="color:var(--fg-4)">-</td>
+              <td data-col="residual">25,030,000</td>
+              <td data-col="lease" class="is-bnk">27,317,000</td>
+            </tr>
+            <tr class="is-focus">
+              <td class="bnk-row-label">차량 완납 비용</td>
+              <td data-col="low">58,115,479</td>
+              <td data-col="residual">67,635,304</td>
+              <td data-col="lease" class="is-bnk">57,201,800<span class="bnk-lowest">최저</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="bnk-note" style="margin-top:14px">
+        ※ <b>BNK렌터카</b>는 초기비용·보험료·자동차세가 렌트료에 포함되어 4년 총 소요비용이 가장 낮습니다.
+        할인 8,944,870원은 특판 렌트 기준 적용 금액입니다.<br>
+        ※ 위 금액은 견적 예시이며, 실제 조건은 BNK 심사 결과 · 재고 · 당월 프로모션에 따라 달라집니다.
+      </p>
+    </div>
+
+    <div class="bnk-panel">
+      <h3 class="bnk-panel-title">BNK렌트 이용 시 장점
+        <small>고객 상담 시 그대로 안내할 수 있는 5가지 포인트입니다.</small>
+      </h3>
+      <ul class="bnk-adv">
+        <li><span class="tick"><i data-lucide="check"></i></span>
+          <div><strong>4년 후 인수 또는 반납</strong> — 가장 저렴한 비용으로 4년 운행</div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span>
+          <div><strong>초기비용 제로</strong> — 선납금·보증금은 필요 시 40%까지 선택 가능</div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span>
+          <div><strong>매년 갱신 보험료 · 자동차세 제로</strong></div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span>
+          <div><strong>DSR(대출한도) 영향 제로</strong></div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span>
+          <div><strong>법인세 · 소득세 절감 효과</strong> — 손비 처리 가능</div></li>
+      </ul>
+
+      <div class="bnk-actions" style="margin-top:18px">
+        <button type="button" class="bnk-btn-yellow" id="bnkQuoteCopy">
+          <i data-lucide="clipboard-copy"></i> 견적 문구 복사
+        </button>
+        <button type="button" class="bnk-btn-ink" id="bnkQuoteImg">
+          <i data-lucide="camera"></i> 견적 이미지 저장
+        </button>
+      </div>
+      <textarea id="bnkQuoteHidden" style="display:none"></textarea>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 7 · BNK 진행 가이드 (PPT 2p 판매 요약 · 3p 실무 진행)
+     ═══════════════════════════════════════════════════════ -->
+<div id="section-bnkguide" class="bnk-wrapper hidden">
+  <div class="bnk-col">
+
+    <div class="bnk-guide-head">
+      <h2>BNK 렌트 진행 가이드</h2>
+      <p>상담 전 확인사항과 실무 진행 순서를 한 화면에서 확인하세요.</p>
+      <div class="bnk-seg" id="bnkSeg">
+        <button type="button" data-seg="notes" class="on">판매 요약</button>
+        <button type="button" data-seg="flow">실무 진행 순서</button>
+        <button type="button" data-seg="check">상담 전 체크</button>
+      </div>
+    </div>
+
+    <!-- ── 판매 요약 12 ────────────────────────────── -->
+    <div class="bnk-panel" data-seg-panel="notes">
+      <div class="bnk-notes">
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">1</div>
+          <div class="bnk-note-body">
+            <h4>판매가능 차종 <span class="bnk-badge dark">차종</span></h4>
+            <div class="bnk-vrow"><b>아르카나</b><span>가솔린 전 차종</span></div>
+            <div class="bnk-vrow"><b>그랑 콜레오스</b><span>26MY — 테크노(Techno) 제외 전 트림</span></div>
+            <div class="bnk-vrow"><b>필랑트</b><span>6월 이전 생산분 — 테크노(Techno) 제외 전 트림</span></div>
+          </div>
+        </div>
+
+        <div class="bnk-note-item is-key">
+          <div class="bnk-num">2</div>
+          <div class="bnk-note-body">
+            <h4>조견표에 없는 차량은 재고 소진 <span class="bnk-badge urgent">재고 ★★★★★</span></h4>
+            <p>조견표 테이블에 보이는 차량이 없을 수 있습니다. <strong>반드시 상담 시 재고 유무를 확인</strong>해 주세요.</p>
+            <p class="sub">문의 : 김도산 매니저 · <a href="tel:01085509992" style="color:var(--fg-1);font-weight:800">010-8550-9992</a></p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item is-key">
+          <div class="bnk-num">3</div>
+          <div class="bnk-note-body">
+            <h4>부산은행 계좌 개설 필수 <span class="bnk-badge urgent">사전안내 필수</span></h4>
+            <p>심사가 통과되면 <strong>부산은행 계좌 개설이 필수</strong>입니다.</p>
+            <p class="sub">자동이체용 부산은행 CMS 계좌 개설 필수</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">4</div>
+          <div class="bnk-note-body">
+            <h4>선수금 · 기간 · 주행거리 조건 <span class="bnk-badge">견적 시 반드시 확인</span></h4>
+            <p>선수금은 최대 <strong>40%</strong>까지 납부 가능하며, 기간과 주행거리를 선택합니다.</p>
+            <div class="bnk-chips">
+              <span class="bnk-chip hi">선수금 최대 40%</span>
+              <span class="bnk-chip">36개월</span>
+              <span class="bnk-chip">48개월</span>
+              <span class="bnk-chip">60개월</span>
+              <span class="bnk-chip">주행거리 1만 km</span>
+              <span class="bnk-chip">2만 km</span>
+              <span class="bnk-chip">3만 km</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">5</div>
+          <div class="bnk-note-body">
+            <h4>보험 가입 조건</h4>
+            <p><strong>26세 이상 직계</strong>는 기본 가입입니다.</p>
+            <p class="sub">추가운전자는 최대 2명까지 가능 / 1인당 월 2만원 렌트료 상승</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">6</div>
+          <div class="bnk-note-body">
+            <h4>BNK 책임 범위</h4>
+            <p>BNK에서는 <strong>최종 탁송까지만</strong> 책임을 집니다. 차량 사용설명이 필요합니다.</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">7</div>
+          <div class="bnk-note-body">
+            <h4>썬팅 · 블랙박스 제공</h4>
+            <p>전면 · 측후면 썬팅과 블랙박스가 제공됩니다.</p>
+            <p class="sub">End-user 희망 썬팅이 있을 시 썬팅 미장착 요청 후, 본인 부담으로 추가 시공</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">8</div>
+          <div class="bnk-note-body">
+            <h4>차량 인도 소요 기간</h4>
+            <p>차량 인도는 BNK 심사가 끝나고 <strong>워킹 데이 기준 약 8일</strong> 소요됩니다.</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">9</div>
+          <div class="bnk-note-body">
+            <h4>수수료 지급 시점</h4>
+            <p>수수료는 <strong>BNK 출고(고객 인도) 기준 2일 이내</strong>에 지급됩니다.</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">10</div>
+          <div class="bnk-note-body">
+            <h4>용품 선택 가능</h4>
+            <p>차량 옵션이 아닌 <strong>용품 선택도 가능</strong>합니다.</p>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">11</div>
+          <div class="bnk-note-body">
+            <h4>중도해지 위약율</h4>
+            <div class="bnk-formula">중도해지위약금 = 잔여대여료 × 중도해지위약율</div>
+            <table class="bnk-mini">
+              <thead>
+                <tr><th>해지 시점</th><th>위약율</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>2년 이내</td><td>36%</td></tr>
+                <tr><td>2년 ~ 3년</td><td>34%</td></tr>
+                <tr><td>3년 ~ 4년</td><td>30%</td></tr>
+                <tr><td>4년 초과</td><td>25%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bnk-note-item">
+          <div class="bnk-num">12</div>
+          <div class="bnk-note-body">
+            <h4>초과주행부담금</h4>
+            <p><span class="bnk-big-num">100<em>원 / km</em></span></p>
+            <p class="sub">계약한 주행거리(1 · 2 · 3만 km)를 초과한 거리만큼 부과됩니다.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 실무 진행 순서 ──────────────────────────── -->
+    <div class="bnk-panel" data-seg-panel="flow" style="display:none">
+      <h3 class="bnk-panel-title">실무 진행 순서
+        <small>영업담당 → 부산TF → BNK → 지원팀 순으로 진행되며, 아래 순서대로 이어집니다.</small>
+      </h3>
+
+      <div class="bnk-legend">
+        <span class="bnk-owner owner-sales">영업담당</span>
+        <span class="bnk-owner owner-tf">부산TF</span>
+        <span class="bnk-owner owner-bnk">BNK</span>
+        <span class="bnk-owner owner-team">지원팀</span>
+      </div>
+
+      <div class="bnk-flow">
+
+        <div class="bnk-step mine">
+          <div class="bnk-step-dot">1</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-sales">영업담당</span>
+            <h4>현금 견적서 작성 → 고객 OK 시 계약번호 생성 요청</h4>
+            <div class="kv"><b>1. 재고</b><span>아르카나 가솔린 · 그랑콜레오스 26MY · 필랑트 BNK HQ 재고 확인 (테크노 제외)</span></div>
+            <div class="kv"><b>2. 견적</b><span>견적 작성 후 BNK 담당자에게 현금 견적 발송</span></div>
+            <div class="kv"><b>고객분류</b><span>25 법인 – 렌트업체 / 희망 차종 선택</span></div>
+            <div class="kv"><b>출고</b><span>본인출고 선택 (우리금융캐피탈 – 이아인)</span></div>
+            <div class="kv"><b>매출 AC</b><span>아르카나 20.5% · 그랑콜레오스 가솔린 22% · 하이브리드 20% · 필랑트 20%</span></div>
+            <div class="kv"><b>등록</b><span>개인등록 선택</span></div>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">2</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-tf">부산TF</span>
+            <h4>계약번호 생성 및 이관</h4>
+            <p>재고가 없을 시 선 생성 및 배정 요청 가능</p>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">3</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-bnk">BNK</span>
+            <h4>고객 심사 및 승인</h4>
+            <p>고객에게 <strong>URL로 신용정보 수집 · 약정서 작성</strong> 안내</p>
+            <p>약정서 작성과 동시에 <strong>대리점에 인도금 송금</strong></p>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">4</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-team">지원팀</span>
+            <h4>입금 처리 및 출고 요청</h4>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">5</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-tf">부산TF</span>
+            <h4>출고메일 발송 → 판매조건 승인</h4>
+            <p>부산TF(김도산 · 박정현) 출고메일 발송 후 판매운영팀 판매조건 승인</p>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">6</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-team">지원팀</span>
+            <h4>출고장 일정 확인 · 출고승인</h4>
+            <p>출고 승인 후 부산TF(김도산 · 박정현)에 날짜 통보</p>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">7</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-tf">부산TF</span>
+            <h4>출고일정 일괄 통보</h4>
+            <p>본출 담당(이아인)에게 출고일정을 일괄 통보</p>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">8</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-team">지원팀</span>
+            <h4>매출 후 등록서류 송부</h4>
+            <p>세금계산서 · 제작증 · 인지 서류를 BNK 담당자에게 송부</p>
+          </div>
+        </div>
+
+        <div class="bnk-step">
+          <div class="bnk-step-dot">9</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-bnk">BNK</span>
+            <h4>차량 준비 후 탁송</h4>
+            <p>차량 인수자에게 탁송 — 인수자는 <strong>BNK 약정 시 입력</strong>된 사람 기준</p>
+          </div>
+        </div>
+
+        <div class="bnk-step mine">
+          <div class="bnk-step-dot">10</div>
+          <div class="bnk-step-card">
+            <span class="bnk-owner owner-sales">영업담당</span>
+            <h4>고객 차량 인수 후 2차 납차 및 소개 요청</h4>
+            <p>인도 완료 후 수수료 지급(출고 기준 2일 이내)과 다음 상담으로 연결</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="bnk-callout">
+        <strong>진행 중 막히는 지점은 두 곳입니다.</strong> ① 재고 확인(김도산 매니저 010-8550-9992)
+        ② 심사 통과 후 부산은행 CMS 계좌 개설. 이 두 가지를 상담 단계에서 미리 안내하면 일정 지연을 줄일 수 있습니다.
+      </div>
+
+      <div class="bnk-contact">
+        <a href="tel:01085509992"><i data-lucide="phone"></i> 김도산 매니저 · 010-8550-9992</a>
+        <span class="pill"><i data-lucide="users"></i> 부산TF 김도산 · 박정현</span>
+        <span class="pill"><i data-lucide="user-round"></i> 본출 담당 이아인</span>
+      </div>
+    </div>
+
+    <!-- ── 상담 전 체크 ────────────────────────────── -->
+    <div class="bnk-panel" data-seg-panel="check" style="display:none">
+      <h3 class="bnk-panel-title">상담 전 체크리스트
+        <small>위 판매 요약에서 반드시 확인해야 하는 항목만 모았습니다. 체크 상태는 자동 저장됩니다.</small>
+      </h3>
+      <div class="bnk-checks" id="bnkChecks">
+        <label class="bnk-check"><input type="checkbox" data-k="c1"><span>조견표에 없는 차량인지 <strong>재고 유무 확인</strong> (<span style="white-space:nowrap">김도산 매니저 010-8550-9992</span>)</span></label>
+        <label class="bnk-check"><input type="checkbox" data-k="c2"><span>판매가능 조건 확인 — <strong>아르카나 가솔린 / 그랑콜레오스 26MY / 필랑트 6월 이전 생산분</strong>, 테크노 제외</span></label>
+        <label class="bnk-check"><input type="checkbox" data-k="c3"><span>심사 통과 후 <strong>부산은행 CMS 계좌 개설</strong> 필요 사전 안내</span></label>
+        <label class="bnk-check"><input type="checkbox" data-k="c4"><span><strong>선수금(최대 40%) · 기간(36/48/60개월) · 주행거리(1·2·3만 km)</strong> 확정</span></label>
+        <label class="bnk-check"><input type="checkbox" data-k="c5"><span>보험 — <strong>26세 이상 직계 기본</strong>, 추가운전자 최대 2명(월 2만원) 확인</span></label>
+        <label class="bnk-check"><input type="checkbox" data-k="c6"><span>End-user 희망 썬팅 여부 확인 → <strong>썬팅 미장착 요청 + 본인 부담</strong> 안내</span></label>
+        <label class="bnk-check"><input type="checkbox" data-k="c7"><span>인도까지 <strong>워킹데이 약 8일</strong> 소요 안내</span></label>
+      </div>
+      <p class="bnk-note" style="margin-top:14px">
+        ※ 체크는 이 브라우저에만 저장됩니다. 상담 건별로 공유되지 않습니다.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
     </div>
 
     <script>
@@ -767,7 +1245,7 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
 
         // 5개 탭 통합 스위칭 로직
         function switchTab(tabId) {
-            const tabs = ['sms', 'card', 'delivery', 'doc', 'calc'];
+            const tabs = ['sms', 'card', 'delivery', 'doc', 'calc', 'bnkquote', 'bnkguide'];
             tabs.forEach(t => {
                 const sec = document.getElementById(`section-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
@@ -1547,5 +2025,7 @@ button[id^="tab-btn-"].bg-black{background:var(--brand-ink) !important;color:var
     })();
     </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+<script src="bnk-rent.js"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
